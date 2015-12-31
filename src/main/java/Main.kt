@@ -4,9 +4,7 @@ import com.google.common.eventbus.EventBus
 import com.google.common.eventbus.Subscribe
 import org.pcollections.TreePVector
 import java.awt.*
-import java.awt.event.WindowAdapter
-import java.awt.event.WindowEvent
-import java.awt.event.WindowListener
+import java.awt.event.MouseMotionAdapter
 import java.awt.geom.Ellipse2D
 import java.util.*
 import javax.swing.JFrame
@@ -14,6 +12,10 @@ import javax.swing.JPanel
 
 
 class ZoomEvent(val zoom: Int) {
+
+}
+
+class MouseEvent(val x: Int, val y: Int){
 
 }
 
@@ -61,7 +63,12 @@ class Simulation(val systemCount: Int, val planetsRange: ClosedRange<Int>) {
 }
 
 class GalaxyView(val simulation: Simulation) : JPanel() {
+    var oldZoom = 1.0
     var zoom = 1.0
+    var lastX = -500
+    var lastY = -500
+    var mouseX = -500
+    var mouseY = -500
 
     init {
         background = Color.white
@@ -73,8 +80,12 @@ class GalaxyView(val simulation: Simulation) : JPanel() {
         println("Paint Me: " + zoom)
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
         g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY)
+        g2d.translate(mouseX,mouseY)
         g2d.scale(zoom, zoom)
-        g2d.translate(-500,-500)
+        g2d.translate(-mouseX, -mouseY)
+
+        oldZoom = zoom
+
         for(system in simulation.systems){
             g2d.color = system.starColor
             val radius = 1
@@ -89,6 +100,7 @@ class GalaxyView(val simulation: Simulation) : JPanel() {
 
     @Subscribe
     public fun onZoom(e: ZoomEvent){
+        oldZoom = zoom
         if(e.zoom > 0){
             zoom *= 0.9
         } else {
@@ -96,6 +108,12 @@ class GalaxyView(val simulation: Simulation) : JPanel() {
         }
         println("Change Zoom: " +  zoom)
         repaint()
+    }
+
+    @Subscribe
+    public fun onMouseMove(e: MouseEvent){
+        mouseX = e.x
+        mouseY = e.y
     }
 }
 
@@ -110,6 +128,13 @@ class SimulationView(val simulation: Simulation, val bus: EventBus) : JPanel() {
             val zoom = it.wheelRotation * it.scrollAmount
             bus.post(ZoomEvent(zoom))
         }
+        addMouseMotionListener(object: MouseMotionAdapter() {
+            override fun mouseMoved(e: java.awt.event.MouseEvent?) {
+                if(e != null){
+                    bus.post(main.MouseEvent(e.x,  e.y))
+                }
+            }
+        })
     }
 }
 
