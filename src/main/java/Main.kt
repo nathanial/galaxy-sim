@@ -9,8 +9,12 @@ import java.awt.event.MouseMotionAdapter
 import java.awt.geom.AffineTransform
 import java.awt.geom.Ellipse2D
 import java.awt.geom.Point2D
+import java.awt.image.BufferedImage
+import java.io.File
 import java.util.*
+import javax.imageio.ImageIO
 import javax.swing.JFrame
+import javax.swing.JLayeredPane
 import javax.swing.JPanel
 import javax.swing.event.MouseInputAdapter
 
@@ -73,6 +77,7 @@ class GalaxyView(val simulation: Simulation) : JPanel() {
     var dragStart = XY(0.0,0.0)
 
     init {
+        isOpaque = false
         background = Color.white
     }
 
@@ -81,6 +86,9 @@ class GalaxyView(val simulation: Simulation) : JPanel() {
         val g2d = g as Graphics2D
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
         g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY)
+
+        g2d.color = Color(0,0,0,100)
+        g2d.fillRect(0,0,1000,1000)
 
         g2d.transform = lastTransform.clone() as AffineTransform
 
@@ -141,13 +149,43 @@ class GalaxyView(val simulation: Simulation) : JPanel() {
     }
 }
 
+class GalaxyBackground() : JPanel() {
+    var image: BufferedImage = ImageIO.read(File("src/assets/images/Blue Stars.jpg"))
+
+    override fun paintComponent(g: Graphics) {
+        super.paintComponent(g)
+        g.drawImage(image, 0, 0, null)
+    }
+
+    override fun getPreferredSize(): Dimension? {
+        return Dimension(1000,1000)
+    }
+
+}
+
 
 class SimulationView(val simulation: Simulation, val bus: EventBus) : JPanel() {
     init {
         background = Color.white
         val galaxyView = GalaxyView(simulation)
+        var galaxyBackground = GalaxyBackground()
         bus.register(galaxyView)
-        add(galaxyView)
+
+        val pane = JLayeredPane()
+        pane.preferredSize = Dimension(1000,1000)
+
+        pane.add(galaxyBackground, Integer(50))
+        pane.add(galaxyView, Integer(51))
+
+
+        galaxyView.bounds = Rectangle(0, 0, 1000, 1000)
+        galaxyBackground.bounds = Rectangle(0,0,1000,1000)
+
+        add(pane)
+
+
+
+
         addMouseWheelListener {
             val zoom = it.wheelRotation * it.scrollAmount
             bus.post(MouseZoomEvent(zoom))
