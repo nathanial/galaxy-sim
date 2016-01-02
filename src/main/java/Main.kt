@@ -4,6 +4,7 @@ import com.google.common.eventbus.EventBus
 import com.google.common.eventbus.Subscribe
 import org.pcollections.TreePVector
 import java.awt.*
+import java.awt.event.MouseEvent
 import java.awt.event.MouseMotionAdapter
 import java.awt.geom.AffineTransform
 import java.awt.geom.Ellipse2D
@@ -11,16 +12,14 @@ import java.awt.geom.Point2D
 import java.util.*
 import javax.swing.JFrame
 import javax.swing.JPanel
+import javax.swing.event.MouseInputAdapter
 
 data class XY(val x: Double, val y: Double)
 
-class ZoomEvent(val zoom: Int) {
-
-}
-
-class MouseEvent(val x: Int, val y: Int){
-
-}
+data class MouseZoomEvent(val zoom: Int)
+data class MouseDownEvent(val x: Int, val y: Int)
+data class MouseUpEvent(val x: Int, val y: Int)
+data class MouseMoveEvent(val x: Int, val y: Int)
 
 class GalacticCoordinates(val x:Int, val y: Int) {
 
@@ -70,6 +69,8 @@ class GalaxyView(val simulation: Simulation) : JPanel() {
     var lastX = 0.0
     var lastY = 0.0
     var lastTransform = AffineTransform()
+    var isDragging = false
+    var dragStart = XY(0.0,0.0)
 
     init {
         background = Color.white
@@ -80,16 +81,6 @@ class GalaxyView(val simulation: Simulation) : JPanel() {
         val g2d = g as Graphics2D
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
         g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY)
-
-        val pt = Point2D.Double()
-        lastTransform.inverseTransform(Point2D.Double(lastX, lastY), pt)
-
-        println("Point: " + pt + ", Last" + XY(lastX, lastY))
-        println("")
-
-        lastTransform.translate(pt.x, pt.y)
-        lastTransform.scale(zoom, zoom)
-        lastTransform.translate(-pt.x, -pt.y)
 
         g2d.transform = lastTransform.clone() as AffineTransform
 
@@ -105,20 +96,48 @@ class GalaxyView(val simulation: Simulation) : JPanel() {
         return Dimension(1000,1000)
     }
 
-    @Subscribe
-    public fun onZoom(e: ZoomEvent){
-        if(e.zoom > 0){
-            zoom = 0.9
-        } else {
-            zoom = 1.1
-        }
+    fun drag(x: Int, y: Int){
+        lastTransform.translate((x - dragStart.x) / lastTransform.scaleX, (y - dragStart.y) / lastTransform.scaleY)
+        dragStart = XY(x.toDouble(),y.toDouble())
+        repaint()
+    }
+
+    fun zoom(factor: Double){
+        val pt = Point2D.Double()
+        lastTransform.inverseTransform(Point2D.Double(lastX, lastY), pt)
+        lastTransform.translate(pt.x, pt.y)
+        lastTransform.scale(factor, factor)
+        lastTransform.translate(-pt.x, -pt.y)
         repaint()
     }
 
     @Subscribe
-    public fun onMouseMove(e: MouseEvent){
+    public fun onZoom(e: MouseZoomEvent){
+        if(e.zoom > 0){
+            zoom(0.8)
+        } else {
+            zoom(1.2)
+        }
+    }
+
+    @Subscribe
+    public fun onMouseMove(e: MouseMoveEvent){
+        if(isDragging){
+            drag(e.x, e.y);
+        }
         lastX = e.x.toDouble()
         lastY = e.y.toDouble()
+    }
+
+    @Subscribe
+    public fun onMouseDown(e: MouseDownEvent){
+        isDragging = true
+        dragStart = XY(e.x.toDouble(), e.y.toDouble())
+    }
+
+    @Subscribe
+    public fun onMouseUp(e: MouseUpEvent){
+        isDragging = false
     }
 }
 
@@ -131,12 +150,31 @@ class SimulationView(val simulation: Simulation, val bus: EventBus) : JPanel() {
         add(galaxyView)
         addMouseWheelListener {
             val zoom = it.wheelRotation * it.scrollAmount
-            bus.post(ZoomEvent(zoom))
+            bus.post(MouseZoomEvent(zoom))
         }
         addMouseMotionListener(object: MouseMotionAdapter() {
             override fun mouseMoved(e: java.awt.event.MouseEvent?) {
                 if(e != null){
-                    bus.post(main.MouseEvent(e.x,  e.y))
+                    bus.post(MouseMoveEvent(e.x,  e.y))
+                }
+            }
+
+            override fun mouseDragged(e: MouseEvent?) {
+                if(e != null){
+                    bus.post(main.MouseMoveEvent(e.x, e.y))
+                }
+            }
+        })
+        addMouseListener(object: MouseInputAdapter() {
+            override fun mousePressed(e: MouseEvent?) {
+                if(e != null){
+                    bus.post(main.MouseDownEvent(e.x, e.y))
+                }
+            }
+
+            override fun mouseReleased(e: MouseEvent?) {
+                if(e != null){
+                    bus.post(main.MouseUpEvent(e.x, e.y))
                 }
             }
         })
