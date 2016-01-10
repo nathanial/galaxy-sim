@@ -28,7 +28,7 @@ class GalaxyView(val simulation: Simulation) : JPanel() {
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
         g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY)
 
-        g2d.color = Color(0, 0, 0, 100)
+        g2d.color = Color(0, 0, 0, 220)
         g2d.fillRect(0,0,1000,1000)
 
         g2d.transform = lastTransform.clone() as AffineTransform

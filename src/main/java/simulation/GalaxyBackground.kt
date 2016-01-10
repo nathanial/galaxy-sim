@@ -9,7 +9,7 @@ import javax.swing.JPanel
 
 
 class GalaxyBackground() : JPanel() {
-    var image: BufferedImage = ImageIO.read(File("src/assets/images/Blue Stars.jpg"))
+    var image: BufferedImage = ImageIO.read(File("src/assets/images/The-Dancing-Nebula.jpg"))
 
     override fun paintComponent(g: Graphics) {
         super.paintComponent(g)

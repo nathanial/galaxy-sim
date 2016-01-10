@@ -16,17 +16,17 @@ class SimulationView(val simulation: Simulation, val bus: EventBus) : JPanel() {
     init {
         background = Color.white
         val galaxyView = GalaxyView(simulation)
-        var galaxyBackground = GalaxyBackground()
+        //var galaxyBackground = GalaxyBackground()
         bus.register(galaxyView)
 
         val pane = JLayeredPane()
         pane.preferredSize = Dimension(1000, 1000)
 
-        pane.add(galaxyBackground, Integer(50))
+        //pane.add(galaxyBackground, Integer(50))
         pane.add(galaxyView, Integer(51))
 
         galaxyView.bounds = Rectangle(0, 0, 1000, 1000)
-        galaxyBackground.bounds = Rectangle(0, 0, 1000, 1000)
+        //galaxyBackground.bounds = Rectangle(0, 0, 1000, 1000)
 
         add(pane)
 
