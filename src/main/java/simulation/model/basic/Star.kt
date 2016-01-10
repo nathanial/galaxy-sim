@@ -2,6 +2,8 @@ package simulation.model.basic
 
 import com.sun.imageio.plugins.common.ImageUtil
 import java.awt.Color
+import java.awt.Graphics2D
+import java.awt.geom.Ellipse2D
 import java.io.File
 import java.util.*
 import javax.imageio.ImageIO
@@ -42,6 +44,18 @@ class Star {
 
     constructor(color: Color){
         this.color = color
+    }
+
+    fun paint(g2d: Graphics2D){
+        g2d.color = color
+        val radius = 0.5
+        val star = Ellipse2D.Double(
+                0 - radius,
+                0 - radius,
+                2.0 * radius,
+                2.0 * radius
+        )
+        g2d.fill(star)
     }
 
 }

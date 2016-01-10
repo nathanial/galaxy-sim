@@ -28,16 +28,13 @@ class GalaxyView(val simulation: Simulation) : JPanel() {
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
         g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY)
 
-        g2d.color = Color(0, 0, 0, 220)
+        g2d.color = Color(0, 0, 0)
         g2d.fillRect(0,0,1000,1000)
 
         g2d.transform = lastTransform.clone() as AffineTransform
 
         for(system in simulation.systems){
-            g2d.color = system.star.color
-            val radius = 1
-            val theCircle = Ellipse2D.Double(system.galacticCoordinates.x.toDouble() - radius, system.galacticCoordinates.y.toDouble() - radius, 2.0 * radius, 2.0 * radius);
-            g2d.fill(theCircle);
+            system.paint(g2d)
         }
     }
 

@@ -18,8 +18,8 @@ class Simulation(val systemCount: Int, val planetsRange: ClosedRange<Int>) {
             val planets = TreePVector.empty<Planet>()
             val asteroids = TreePVector.empty<Asteroid>()
             val coords = GalacticCoordinates(
-                    Math.floor(random.nextGaussian() * 100 + 500).toInt(),
-                    Math.floor(random.nextGaussian() * 100 + 500).toInt()
+                    Math.floor(random.nextGaussian() * 300 + 500).toInt(),
+                    Math.floor(random.nextGaussian() * 300 + 500).toInt()
             )
             systems.add(SolarSystem("System " + i, Star(), coords, planets, asteroids))
             i++;
