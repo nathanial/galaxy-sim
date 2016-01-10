@@ -34,7 +34,7 @@ class GalaxyView(val simulation: Simulation) : JPanel() {
         g2d.transform = lastTransform.clone() as AffineTransform
 
         for(system in simulation.systems){
-            g2d.color = system.starColor
+            g2d.color = system.star.color
             val radius = 1
             val theCircle = Ellipse2D.Double(system.galacticCoordinates.x.toDouble() - radius, system.galacticCoordinates.y.toDouble() - radius, 2.0 * radius, 2.0 * radius);
             g2d.fill(theCircle);
