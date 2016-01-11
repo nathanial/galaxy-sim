@@ -1,3 +1,5 @@
 X Separate Solar Systems More
 X Add Planets
-Put planets into orbital rings
+X Put planets into orbital rings
+Make planets move
+Hide orbitals at a certain zoom distance
