@@ -12,15 +12,21 @@ class SolarSystem(val name: String,
                   val planets: TreePVector<Planet>,
                   val asteroids: TreePVector<Asteroid>) {
 
+    enum class PaintOptions {
+        ALL,
+        HIDE_PLANETS
+    }
 
-    fun paint(g2d: Graphics2D){
+    fun paint(g2d: Graphics2D, options: PaintOptions = PaintOptions.ALL){
         val oldTransform = AffineTransform(g2d.transform)
         g2d.translate(galacticCoordinates.x, galacticCoordinates.y)
 
         star.paint(g2d)
 
-        for(planet in planets){
-            planet.paint(g2d)
+        if(options == PaintOptions.ALL){
+            for(planet in planets){
+                planet.paint(g2d)
+            }
         }
 
         g2d.transform = oldTransform

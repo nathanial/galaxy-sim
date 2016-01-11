@@ -1,5 +1,11 @@
 X Separate Solar Systems More
 X Add Planets
 X Put planets into orbital rings
+X Shrink planet orbits
+X Remove overlapping systems
+X Only draw systems in viewport
+X Hide orbitals at a certain zoom distance
+X Give stars a minimum (1 pixel) size
+
 Make planets move
-Hide orbitals at a certain zoom distance
+

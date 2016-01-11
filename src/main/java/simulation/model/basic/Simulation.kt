@@ -18,22 +18,26 @@ class Simulation(val systemCount: Int, val planetsRange: ClosedRange<Int>) {
         while(i < systemCount){
             val asteroids = TreePVector.empty<Asteroid>()
             val coords = Coordinates(
-                random.nextGaussian() * 300 + 500,
-                random.nextGaussian() * 300 + 500
+                random.nextGaussian() * 1000 + 500,
+                random.nextGaussian() * 1000 + 500
             )
             val planets = generatePlanets()
             systems.add(SolarSystem("System " + i, Star(), coords, planets, asteroids))
             i++;
         }
+        //removeOverlapping(systems)
         return TreePVector.from(systems)
     }
+
+
 
     private fun generatePlanets(): TreePVector<Planet> {
         val planetCount = random.nextInt((planetsRange.endInclusive - planetsRange.start) + 1) + planetsRange.start
         val planets = ArrayList<Planet>()
         var i = 0;
+        var radius = 1.0;
         while(i < planetCount){
-            val radius = random.nextInt(3) + 1
+            radius += random.nextDouble() + 0.5;
             val angle = Math.toRadians(random.nextDouble() * 360)
             val offset = Coordinates(Math.cos(angle) * radius, Math.sin(angle) * radius)
             planets.add(Planet(offset))

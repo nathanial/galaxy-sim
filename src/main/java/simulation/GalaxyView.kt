@@ -3,10 +3,12 @@ package simulation
 import com.google.common.eventbus.Subscribe
 import main.*
 import simulation.model.basic.Simulation
+import simulation.model.basic.SolarSystem
 import java.awt.*
 import java.awt.geom.AffineTransform
 import java.awt.geom.Ellipse2D
 import java.awt.geom.Point2D
+import java.util.*
 import javax.swing.JPanel
 
 
@@ -33,13 +35,23 @@ class GalaxyView(val simulation: Simulation) : JPanel() {
 
         g2d.transform = lastTransform.clone() as AffineTransform
 
-        for(system in simulation.systems){
-            system.paint(g2d)
+        for(system in this.findSystemsInView(g2d.clipBounds)){
+            system.paint(g2d, pickRenderMode(g2d))
         }
     }
 
     override fun getPreferredSize(): Dimension? {
         return Dimension(1000, 1000)
+    }
+
+    fun findSystemsInView(clipBounds: Rectangle): Collection<SolarSystem> {
+        val systems = ArrayList<SolarSystem>()
+        for(system in this.simulation.systems){
+            if(clipBounds.contains(Point2D.Double(system.galacticCoordinates.x, system.galacticCoordinates.y))){
+                systems.add(system)
+            }
+        }
+        return systems;
     }
 
     fun drag(x: Int, y: Int){
@@ -55,6 +67,14 @@ class GalaxyView(val simulation: Simulation) : JPanel() {
         lastTransform.scale(factor, factor)
         lastTransform.translate(-pt.x, -pt.y)
         repaint()
+    }
+
+    fun pickRenderMode(g2d: Graphics2D): SolarSystem.PaintOptions {
+        if(g2d.transform.scaleY > 6){
+            return SolarSystem.PaintOptions.ALL
+        } else {
+            return SolarSystem.PaintOptions.HIDE_PLANETS
+        }
     }
 
     @Subscribe

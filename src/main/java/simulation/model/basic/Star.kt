@@ -48,7 +48,8 @@ class Star {
 
     fun paint(g2d: Graphics2D){
         g2d.color = color
-        val radius = 0.5
+        println("Transform " + g2d.transform.scaleX + "," + g2d.transform.scaleY)
+        val radius = calculateRadius(g2d)
         val star = Ellipse2D.Double(
                 0 - radius,
                 0 - radius,
@@ -56,6 +57,14 @@ class Star {
                 2.0 * radius
         )
         g2d.fill(star)
+    }
+
+    fun calculateRadius(g2d:Graphics2D): Double{
+        if(g2d.transform.scaleX < 2){
+            return 1 / Math.pow(g2d.transform.scaleX, 0.75)
+        } else {
+            return 0.5
+        }
     }
 
 }
