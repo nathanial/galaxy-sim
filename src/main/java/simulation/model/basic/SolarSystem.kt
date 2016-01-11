@@ -8,7 +8,7 @@ import java.awt.geom.Ellipse2D
 
 class SolarSystem(val name: String,
                   val star: Star,
-                  val galacticCoordinates: GalacticCoordinates,
+                  val galacticCoordinates: Coordinates,
                   val planets: TreePVector<Planet>,
                   val asteroids: TreePVector<Asteroid>) {
 
@@ -19,6 +19,9 @@ class SolarSystem(val name: String,
 
         star.paint(g2d)
 
+        for(planet in planets){
+            planet.paint(g2d)
+        }
 
         g2d.transform = oldTransform
     }

@@ -1,5 +1,5 @@
 package simulation.model.basic
 
-class Asteroid(val galacticCoordinates: GalacticCoordinates) {
+class Asteroid(val galacticCoordinates: Coordinates) {
 
 }

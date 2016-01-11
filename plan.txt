@@ -1,2 +1,3 @@
 X Separate Solar Systems More
-Add Planets
+X Add Planets
+Put planets into orbital rings
