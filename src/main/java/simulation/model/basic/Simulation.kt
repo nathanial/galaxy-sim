@@ -38,9 +38,8 @@ class Simulation(val systemCount: Int, val planetsRange: ClosedRange<Int>) {
         var radius = 1.0;
         while(i < planetCount){
             radius += random.nextDouble() + 0.5;
-            val angle = Math.toRadians(random.nextDouble() * 360)
-            val offset = Coordinates(Math.cos(angle) * radius, Math.sin(angle) * radius)
-            planets.add(Planet(offset))
+            val angle = random.nextDouble() * 360
+            planets.add(Planet(radius, angle))
             i += 1
         }
         return TreePVector.from(planets)
