@@ -1,17 +1,27 @@
 package simulation.model.basic
 
+import com.google.common.eventbus.EventBus
 import org.pcollections.TreePVector
+import util.map
 import java.util.*
+import java.util.concurrent.atomic.AtomicReference
 
-class Simulation(val systemCount: Int, val planetsRange: ClosedRange<Int>) {
+class TickEvent(val systems: TreePVector<SolarSystem>) {
+
+}
+
+class Simulation(val bus: EventBus, val systemCount: Int, val planetsRange: ClosedRange<Int>) {
     private val random = Random()
     public val systems = createSystems()
 
-    public fun step(){
-
+    public fun tick(){
+        systems.set(TreePVector.from(map(systems.get(), { s ->
+            s.rotatePlanets(degrees=1.0)
+        })))
+        bus.post(TickEvent(systems.get()))
     }
 
-    private fun createSystems(): TreePVector<SolarSystem> {
+    private fun createSystems(): AtomicReference<TreePVector<SolarSystem>> {
         var i = 0;
         val systems = ArrayList<SolarSystem>()
 
@@ -26,10 +36,8 @@ class Simulation(val systemCount: Int, val planetsRange: ClosedRange<Int>) {
             i++;
         }
         //removeOverlapping(systems)
-        return TreePVector.from(systems)
+        return AtomicReference(TreePVector.from(systems))
     }
-
-
 
     private fun generatePlanets(): TreePVector<Planet> {
         val planetCount = random.nextInt((planetsRange.endInclusive - planetsRange.start) + 1) + planetsRange.start

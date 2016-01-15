@@ -4,12 +4,14 @@ import com.google.common.eventbus.Subscribe
 import main.*
 import simulation.model.basic.Simulation
 import simulation.model.basic.SolarSystem
+import simulation.model.basic.TickEvent
 import java.awt.*
 import java.awt.geom.AffineTransform
 import java.awt.geom.Ellipse2D
 import java.awt.geom.Point2D
 import java.util.*
 import javax.swing.JPanel
+import javax.swing.SwingUtilities
 
 
 class GalaxyView(val simulation: Simulation) : JPanel() {
@@ -46,7 +48,7 @@ class GalaxyView(val simulation: Simulation) : JPanel() {
 
     fun findSystemsInView(clipBounds: Rectangle): Collection<SolarSystem> {
         val systems = ArrayList<SolarSystem>()
-        for(system in this.simulation.systems){
+        for(system in this.simulation.systems.get()){
             if(clipBounds.contains(Point2D.Double(system.galacticCoordinates.x, system.galacticCoordinates.y))){
                 systems.add(system)
             }
@@ -104,5 +106,12 @@ class GalaxyView(val simulation: Simulation) : JPanel() {
     @Subscribe
     public fun onMouseUp(e: MouseUpEvent){
         isDragging = false
+    }
+
+    @Subscribe
+    public fun onSimulationUpdated(e: TickEvent){
+        SwingUtilities.invokeLater {
+            repaint()
+        }
     }
 }

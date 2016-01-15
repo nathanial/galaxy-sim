@@ -1,6 +1,7 @@
 package simulation.model.basic
 
 import org.pcollections.TreePVector
+import util.map
 import java.awt.Color
 import java.awt.Graphics2D
 import java.awt.geom.AffineTransform
@@ -30,5 +31,15 @@ class SolarSystem(val name: String,
         }
 
         g2d.transform = oldTransform
+    }
+
+    public fun rotatePlanets(degrees: Double): SolarSystem {
+        return SolarSystem(
+                name,
+                star,
+                galacticCoordinates,
+                TreePVector.from(map(planets, { p -> Planet(p.orbitRadius, p.angle + degrees)})),
+                asteroids
+        )
     }
 }
