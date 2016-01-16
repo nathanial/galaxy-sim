@@ -38,7 +38,7 @@ class SolarSystem(val name: String,
                 name,
                 star,
                 galacticCoordinates,
-                TreePVector.from(map(planets, { p -> Planet(p.orbitRadius, p.angle + degrees)})),
+                TreePVector.from(map(planets, { p -> p.rotate(degrees * p.speed)})),
                 asteroids
         )
     }

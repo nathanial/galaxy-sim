@@ -81,31 +81,39 @@ class GalaxyView(val simulation: Simulation) : JPanel() {
 
     @Subscribe
     public fun onZoom(e: MouseZoomEvent){
-        if(e.zoom > 0){
-            zoom(0.8)
-        } else {
-            zoom(1.2)
+        SwingUtilities.invokeLater {
+            if(e.zoom > 0){
+                zoom(0.8)
+            } else {
+                zoom(1.2)
+            }
         }
     }
 
     @Subscribe
     public fun onMouseMove(e: MouseMoveEvent){
-        if(isDragging){
-            drag(e.x, e.y);
+        SwingUtilities.invokeLater {
+            if(isDragging){
+                drag(e.x, e.y);
+            }
+            lastX = e.x.toDouble()
+            lastY = e.y.toDouble()
         }
-        lastX = e.x.toDouble()
-        lastY = e.y.toDouble()
     }
 
     @Subscribe
     public fun onMouseDown(e: MouseDownEvent){
-        isDragging = true
-        dragStart = XY(e.x.toDouble(), e.y.toDouble())
+        SwingUtilities.invokeLater {
+            isDragging = true
+            dragStart = XY(e.x.toDouble(), e.y.toDouble())
+        }
     }
 
     @Subscribe
     public fun onMouseUp(e: MouseUpEvent){
-        isDragging = false
+        SwingUtilities.invokeLater {
+            isDragging = false
+        }
     }
 
     @Subscribe

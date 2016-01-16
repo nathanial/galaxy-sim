@@ -47,7 +47,7 @@ class Simulation(val bus: EventBus, val systemCount: Int, val planetsRange: Clos
         while(i < planetCount){
             radius += random.nextDouble() + 0.5;
             val angle = random.nextDouble() * 360
-            planets.add(Planet(radius, angle))
+            planets.add(Planet(randomPlanetKind(), radius, angle, Math.max(Math.random(),0.5) / radius))
             i += 1
         }
         return TreePVector.from(planets)

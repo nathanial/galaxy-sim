@@ -9,4 +9,11 @@ X Give stars a minimum (1 pixel) size
 X Make planets move
 
 
-
+Different Kinds of Planets
+Moons around planets
+Variable planet numbers
+Asteroid belts
+Comets
+Different kinds of stars
+Names of stars and planets
+Twinkling star effect
