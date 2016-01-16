@@ -2,10 +2,10 @@ package simulation.model.basic
 
 import org.pcollections.TreePVector
 import util.map
+import util.paintToImage
 import java.awt.Color
 import java.awt.Graphics2D
 import java.awt.geom.AffineTransform
-import java.awt.geom.Ellipse2D
 
 class SolarSystem(val name: String,
                   val star: Star,

@@ -1,6 +1,7 @@
 package util
 
-import simulation.model.basic.SolarSystem
+import java.awt.Graphics2D
+import java.awt.image.BufferedImage
 import java.util.*
 
 fun <T> map(list: Collection<T>, func: (x: T) -> T): Collection<T> {
@@ -10,6 +11,11 @@ fun <T> map(list: Collection<T>, func: (x: T) -> T): Collection<T> {
     }
     return coll;
 }
-/**
- * Created by nathanial on 1/15/2016.
- */
+
+fun paintToImage(width:Int, height:Int, func: (g2d: Graphics2D) -> Unit): BufferedImage {
+    val image = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
+    val g2 = image.createGraphics()
+    func(g2)
+    g2.dispose()
+    return image
+}
