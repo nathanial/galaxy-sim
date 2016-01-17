@@ -29,7 +29,7 @@ class SimulationFrame(val simulation: Simulation, val bus: EventBus) : JFrame("G
 
 fun main(args: Array<String>){
     val bus = EventBus("Simulation Bus")
-    val sim = Simulation(bus, systemCount = 1000, planetsRange = 3..3)
+    val sim = Simulation(bus, systemCount = 10000, planetsRange = 0..9)
     SimulationFrame(sim, bus)
     while(true){
         sim.tick();

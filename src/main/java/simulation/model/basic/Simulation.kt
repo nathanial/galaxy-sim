@@ -28,14 +28,13 @@ class Simulation(val bus: EventBus, val systemCount: Int, val planetsRange: Clos
         while(i < systemCount){
             val asteroids = TreePVector.empty<Asteroid>()
             val coords = Coordinates(
-                random.nextGaussian() * 1000 + 500,
-                random.nextGaussian() * 1000 + 500
+                random.nextGaussian() * 10000 + 5000,
+                random.nextGaussian() * 10000 + 5000
             )
             val planets = generatePlanets()
             systems.add(SolarSystem("System " + i, Star(), coords, planets, asteroids))
             i++;
         }
-        //removeOverlapping(systems)
         return AtomicReference(TreePVector.from(systems))
     }
 

@@ -12,8 +12,9 @@ X Make planets move
 X Different Kinds of Planets
 X Twinkling star effect
 X Variable planet size
-
-Variable planet numbers
+X Variable planet numbers
+Desaturate star color with distance
+Add Spiral Shape to Galaxy
 Adjustable Window Size
 
 Moons around planets
