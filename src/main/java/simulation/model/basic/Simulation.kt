@@ -28,8 +28,8 @@ class Simulation(val bus: EventBus, val systemCount: Int, val planetsRange: Clos
         while(i < systemCount){
             val asteroids = TreePVector.empty<Asteroid>()
             val coords = Coordinates(
-                random.nextGaussian() * 10000 + 5000,
-                random.nextGaussian() * 10000 + 5000
+                random.nextGaussian() * 5000 + 2500,
+                random.nextGaussian() * 5000 + 2500
             )
             val planets = generatePlanets()
             systems.add(SolarSystem("System " + i, Star(), coords, planets, asteroids))

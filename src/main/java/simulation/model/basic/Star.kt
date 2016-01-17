@@ -71,7 +71,7 @@ class Star {
 
     private fun calculateRadius(g2d:Graphics2D): Double{
         if(g2d.transform.scaleX < 2){
-            return 1 / Math.pow(g2d.transform.scaleX, 0.75)
+            return 1 / Math.pow(g2d.transform.scaleX, 0.99)
         } else {
             return 0.5
         }
@@ -81,7 +81,7 @@ class Star {
         if(g2d.transform.scaleX < 0.3) {
             val coeff = Math.max(Math.pow(g2d.transform.scaleX * 1000.0, 1.5), 1000.0)
             val time = System.currentTimeMillis() / coeff + phaseOffset * 100;
-            var ratio = Math.min(Math.max(g2d.transform.scaleX * 255.0, 100.0), 255.0);
+            val ratio = Math.min(Math.max(g2d.transform.scaleX * 255.0, 100.0), 255.0);
             val transparency = ((255-ratio) * Math.abs(Math.sin(time))).toInt() + ratio.toInt()
             return Color(color.red, color.green, color.blue, transparency)
         } else {

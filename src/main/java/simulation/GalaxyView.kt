@@ -24,6 +24,7 @@ class GalaxyView(val simulation: Simulation) : JPanel() {
     init {
         isOpaque = false
         background = Color.white
+        lastTransform.scale(0.01,0.01)
     }
 
     override fun paintComponent(g: Graphics?) {
@@ -59,7 +60,7 @@ class GalaxyView(val simulation: Simulation) : JPanel() {
     fun drag(x: Int, y: Int){
         lastTransform.translate((x - dragStart.x) / lastTransform.scaleX, (y - dragStart.y) / lastTransform.scaleY)
         dragStart = XY(x.toDouble(), y.toDouble())
-        repaint()
+        repaint(16)
     }
 
     fun zoom(factor: Double){
@@ -68,7 +69,7 @@ class GalaxyView(val simulation: Simulation) : JPanel() {
         lastTransform.translate(pt.x, pt.y)
         lastTransform.scale(factor, factor)
         lastTransform.translate(-pt.x, -pt.y)
-        repaint()
+        repaint(16)
     }
 
     fun pickRenderMode(g2d: Graphics2D): SolarSystem.PaintOptions {
@@ -83,9 +84,9 @@ class GalaxyView(val simulation: Simulation) : JPanel() {
     public fun onZoom(e: MouseZoomEvent){
         SwingUtilities.invokeLater {
             if(e.zoom > 0){
-                zoom(0.8)
+                zoom(0.9)
             } else {
-                zoom(1.2)
+                zoom(1.1)
             }
         }
     }
@@ -119,7 +120,7 @@ class GalaxyView(val simulation: Simulation) : JPanel() {
     @Subscribe
     public fun onSimulationUpdated(e: TickEvent){
         SwingUtilities.invokeLater {
-            repaint()
+            repaint(100)
         }
     }
 }
