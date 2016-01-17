@@ -46,7 +46,6 @@ class Star {
     constructor(){
         this.color = randomStarColor()
         this.id = UUID.randomUUID()
-        println("ID:" + this.id.toString() + ", " + id.toString().hashCode())
         this.random = Random(id.toString().hashCode().toLong())
         this.phaseOffset = this.random.nextDouble()
     }
@@ -54,7 +53,6 @@ class Star {
     constructor(color: Color, id: UUID){
         this.color = color
         this.id = id
-        println("ID:" + this.id.toString())
         this.random = Random(id.node())
         this.phaseOffset = this.random.nextDouble()
     }
@@ -81,7 +79,7 @@ class Star {
 
     private fun calculateColor(g2d:Graphics2D):Color {
         if(g2d.transform.scaleX < 0.3) {
-            val coeff = Math.max(Math.pow(g2d.transform.scaleX * 1000.0, 1.5), 700.0)
+            val coeff = Math.max(Math.pow(g2d.transform.scaleX * 1000.0, 1.5), 1000.0)
             val time = System.currentTimeMillis() / coeff + phaseOffset * 100;
             var ratio = Math.min(Math.max(g2d.transform.scaleX * 255.0, 100.0), 255.0);
             val transparency = ((255-ratio) * Math.abs(Math.sin(time))).toInt() + ratio.toInt()
