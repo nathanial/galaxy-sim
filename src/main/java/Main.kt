@@ -17,7 +17,7 @@ data class MouseMoveEvent(val x: Int, val y: Int)
 class SimulationFrame(val simulation: Simulation, val bus: EventBus) : JFrame("Galactic Simulation") {
 
     init {
-        isResizable = false
+        isResizable = true
         defaultCloseOperation = JFrame.EXIT_ON_CLOSE
         background = Color.white
 

@@ -3,9 +3,12 @@ package simulation
 import com.google.common.eventbus.EventBus
 import main.*
 import simulation.model.basic.Simulation
+import java.awt.BorderLayout
 import java.awt.Color
 import java.awt.Dimension
 import java.awt.Rectangle
+import java.awt.event.ComponentAdapter
+import java.awt.event.ComponentEvent
 import java.awt.event.MouseEvent
 import java.awt.event.MouseMotionAdapter
 import javax.swing.JLayeredPane
@@ -14,13 +17,15 @@ import javax.swing.event.MouseInputAdapter
 
 class SimulationView(val simulation: Simulation, val bus: EventBus) : JPanel() {
     init {
+        layout = BorderLayout()
+
         background = Color.white
         val galaxyView = GalaxyView(simulation)
         bus.register(galaxyView)
 
         val pane = JLayeredPane()
-        pane.preferredSize = Dimension(1000, 1000)
         pane.add(galaxyView, Integer(51))
+        pane.preferredSize = Dimension(1000,1000)
         galaxyView.bounds = Rectangle(0, 0, 1000, 1000)
 
         add(pane)
@@ -55,5 +60,16 @@ class SimulationView(val simulation: Simulation, val bus: EventBus) : JPanel() {
                 }
             }
         })
+
+        addComponentListener(object: ComponentAdapter(){
+            override fun componentResized(p0: ComponentEvent?) {
+                galaxyView.bounds = java.awt.Rectangle(0,0,size.width,size.height)
+            }
+
+            override fun componentMoved(p0: ComponentEvent?) {
+                galaxyView.bounds = java.awt.Rectangle(0,0,size.width,size.height)
+            }
+        })
+
     }
 }

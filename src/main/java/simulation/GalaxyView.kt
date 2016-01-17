@@ -24,7 +24,9 @@ class GalaxyView(val simulation: Simulation) : JPanel() {
     init {
         isOpaque = false
         background = Color.white
+        lastTransform.translate(500.0,500.0)
         lastTransform.scale(0.01,0.01)
+
     }
 
     override fun paintComponent(g: Graphics?) {
@@ -34,7 +36,7 @@ class GalaxyView(val simulation: Simulation) : JPanel() {
         g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY)
 
         g2d.color = Color(0, 0, 0)
-        g2d.fillRect(0,0,1000,1000)
+        g2d.fillRect(0,0,this.size.width,this.size.height)
 
         g2d.transform = lastTransform.clone() as AffineTransform
 
