@@ -11,9 +11,13 @@ X Make planets move
 
 X Different Kinds of Planets
 X Twinkling star effect
+X Variable planet size
+
+Variable planet numbers
+Adjustable Window Size
 
 Moons around planets
-Variable planet numbers
+
 Asteroid belts
 Comets
 Different kinds of stars
