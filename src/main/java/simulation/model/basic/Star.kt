@@ -7,6 +7,8 @@ import java.awt.geom.Ellipse2D
 import java.io.File
 import java.util.*
 import javax.imageio.ImageIO
+import kotlin.collections.count
+import kotlin.collections.size
 
 val rand = Random()
 val starColors = ArrayList<Color>()
@@ -37,17 +39,28 @@ fun randomStarColor():Color{
 
 class Star {
     val color: Color
+    val id: UUID
+    val random: Random
+    val phaseOffset: Double
 
     constructor(){
         this.color = randomStarColor()
+        this.id = UUID.randomUUID()
+        println("ID:" + this.id.toString() + ", " + id.toString().hashCode())
+        this.random = Random(id.toString().hashCode().toLong())
+        this.phaseOffset = this.random.nextDouble()
     }
 
-    constructor(color: Color){
+    constructor(color: Color, id: UUID){
         this.color = color
+        this.id = id
+        println("ID:" + this.id.toString())
+        this.random = Random(id.node())
+        this.phaseOffset = this.random.nextDouble()
     }
 
     fun paint(g2d: Graphics2D){
-        g2d.color = color
+        g2d.color = calculateColor(g2d)
         val radius = calculateRadius(g2d)
         val star = Ellipse2D.Double(
                 0 - radius,
@@ -58,11 +71,23 @@ class Star {
         g2d.fill(star)
     }
 
-    fun calculateRadius(g2d:Graphics2D): Double{
+    private fun calculateRadius(g2d:Graphics2D): Double{
         if(g2d.transform.scaleX < 2){
             return 1 / Math.pow(g2d.transform.scaleX, 0.75)
         } else {
             return 0.5
+        }
+    }
+
+    private fun calculateColor(g2d:Graphics2D):Color {
+        if(g2d.transform.scaleX < 0.3) {
+            val coeff = Math.max(Math.pow(g2d.transform.scaleX * 1000.0, 1.5), 700.0)
+            val time = System.currentTimeMillis() / coeff + phaseOffset * 100;
+            var ratio = Math.min(Math.max(g2d.transform.scaleX * 255.0, 100.0), 255.0);
+            val transparency = ((255-ratio) * Math.abs(Math.sin(time))).toInt() + ratio.toInt()
+            return Color(color.red, color.green, color.blue, transparency)
+        } else {
+            return color
         }
     }
 

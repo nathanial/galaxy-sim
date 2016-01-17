@@ -10,7 +10,7 @@ X Make planets move
 
 
 X Different Kinds of Planets
-Twinkling star effect
+X Twinkling star effect
 
 Moons around planets
 Variable planet numbers
