@@ -34,7 +34,7 @@ fun randomStarColor():Color{
     if(!colorsLoaded){
         loadStarColors();
     }
-    return starColors[Math.abs(rand.nextInt()) % starColors.count()];
+    return starColors[Math.abs(rand.nextInt()) % starColors.size];
 }
 
 class Star {
