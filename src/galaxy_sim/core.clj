@@ -4,7 +4,7 @@
   (:gen-class))
 
 (defn -main [& args]
-  (let [s {:x 0 :y 0 :color [255 255 255]}]
+  (let [s {:x 0 :y 0 :color {:red 255 :green 255 :blue 255 :alpha 255}}]
     (println "Star" (star/draw s))))
 
     ; (invoke-later
