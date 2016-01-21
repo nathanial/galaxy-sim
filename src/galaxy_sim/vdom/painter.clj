@@ -5,16 +5,13 @@
            [java.awt Color BorderLayout Dimension RenderingHints Rectangle]
            [java.awt.geom Ellipse2D$Double]))
 
-(defn- to-awt-color [{:keys [red,green,blue,alpha]}]
-  (Color. red green blue alpha))
-
 (defmulti paint-element (fn [graphics element] (:type element)))
 
 (defmethod paint-element :ellipse [graphics element]
-  (let [color (:color element)
+  (let [[red green blue] (:color element)
         [a b c d] (:vertices element)
         shape (Ellipse2D$Double. a b c d)]
     (doto graphics
-      (.setColor (to-awt-color color)))
+      (.setColor (Color. red green blue)))
     (when (:fill element)
       (.fill graphics shape))))

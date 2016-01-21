@@ -12,7 +12,7 @@
   })
 
 (def random-planets
-  (iterate (fn [_]
+  (repeatedly (fn []
     (let [radius (+ 1.5 (.nextDouble random))
           angle (* 360 (.nextDouble random))
           kind (rand-nth planet/kinds)
@@ -25,23 +25,24 @@
         :size size
         :speed speed
       }
-    )) 0))
+    ))))
 
 (def random-systems
-  (iterate (fn [_]
+  (repeatedly (fn []
     (let [coords (create-coordinates)
-          planets (take (rand-int 9) random-planets)
+          planets (doall (take (rand-int 9) random-planets))
           asteroids []]
         {
-          :star {:color [255 0 0]}
-          :coords coords
+          :star {:color [255 0 0], :x (:x coords) :y (:y coords)}
           :planets planets
           :asteroids asteroids
-          })) 0))
+          }))))
 
 (defn create []
   (binding [random (Random.)]
-    (take 1000 random-systems)))
+    (doall (take 1000 random-systems))))
 
 (defn draw [sim]
-  [])
+  (doall
+    (for [system sim]
+      (star/draw (:star system)))))
