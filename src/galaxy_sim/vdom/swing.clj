@@ -1,4 +1,5 @@
-(ns galaxy-sim.vdom
+(ns galaxy-sim.vdom.swing
+  (:require [galaxy-sim.vdom.painter :as painter])
   (:import [javax.swing
             SwingUtilities JFrame JPanel JLabel
             JLayeredPane]
@@ -8,19 +9,6 @@
 (defmacro invoke-later [& args]
   `(SwingUtilities/invokeLater (fn [] ~@args)))
 
-(defn- to-awt-color [{:keys [red,green,blue,alpha]}]
-  (Color. red green blue alpha))
-
-(defmulti paint-element (fn [graphics element] (:type element)))
-
-(defmethod paint-element :ellipse [graphics element]
-  (let [color (:color element)
-        [a b c d] (:vertices element)
-        shape (Ellipse2D$Double. a b c d)]
-    (doto graphics
-      (.setColor (to-awt-color color)))
-    (when (:fill element)
-      (.fill graphics shape))))
 
 (defn- create-dom-view [dom]
   (proxy [JPanel] []
@@ -33,7 +21,7 @@
         (.fillRect 0 0 (.. this (getSize) width) (.. this (getSize) height)))
       (doseq [element dom]
         (println "PAINT" element)
-        (paint-element g element)))
+        (painter/paint-element g element)))
 
     (getPreferredSize  []
       (Dimension. 1000 1000))))

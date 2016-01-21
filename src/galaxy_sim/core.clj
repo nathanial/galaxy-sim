@@ -1,10 +1,11 @@
 (ns galaxy-sim.core
   (:require [galaxy-sim.astronomical.star :as star]
-            [galaxy-sim.vdom :as vdom])
+            [galaxy-sim.astronomical.simulation :as simulation]
+            [galaxy-sim.vdom.swing :as vdom-swing])
   (:gen-class))
 
 (def red {:red 255 :green 0 :blue 0 :alpha 255})
 
 (defn -main [& args]
-  (let [s {:x 0 :y 0 :color red}]
-    (vdom/render [(star/draw s)])))
+  (let [sim (simulation/create)]
+    (vdom-swing/render (simulation/draw sim))))
