@@ -51,7 +51,7 @@
       (.addMouseWheelListener
         (proxy [MouseWheelListener] []
           (mouseWheelMoved [e]
-            (.add event-queue {:event :mouse-wheel :zoom (* (.wheelRotation e) (.scrollAmount e))}))))
+            (.add event-queue {:event :mouse-wheel :zoom (* (.getWheelRotation e) (.getScrollAmount e))}))))
       (.addMouseMotionListener
         (proxy [MouseMotionAdapter] []
           (mouseMoved [e]

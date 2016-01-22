@@ -7,7 +7,15 @@
 
 (def red {:red 255 :green 0 :blue 0 :alpha 255})
 
+(defn handle-events []
+  (loop []
+    (let [event (.poll globals/event-queue)]
+      (when event
+        (println event))
+      (recur))))
+
 (defn -main [& args]
+  (.start (Thread. handle-events))
   (let [sim (simulation/create)
         drawing (simulation/draw sim)]
     (dosync
