@@ -6,6 +6,7 @@
   :dependencies [
     [org.clojure/clojure "1.7.0"]
     [org.clojars.nathell/clojure-contrib "1.2.0"]
+    [com.rpl/specter "0.9.1"]
   ]
   :main ^:skip-aot galaxy-sim.core
   :target-path "target/%s"

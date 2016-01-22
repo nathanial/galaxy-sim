@@ -5,21 +5,22 @@
             [galaxy-sim.vdom.swing :as vdom-swing])
   (:gen-class))
 
-(def red {:red 255 :green 0 :blue 0 :alpha 255})
-
 (defn handle-events []
   (loop []
     (let [event (.poll globals/event-queue)]
       (when event
-        (println event))
+        (let [kind (:event event)]
+          (doseq [listener (kind @globals/event-listeners)]
+            (listener event))))
       (recur))))
+
+(globals/add-event-listener :mouse-move (fn [e] (println "Mouse Move" e)))
 
 (defn -main [& args]
   (.start (Thread. handle-events))
   (let [sim (simulation/create)
         drawing (simulation/draw sim)]
-    (dosync
-      (swap! globals/sim-state assoc
-             :simulation sim
-             :drawing drawing))
+    (swap! globals/sim-state assoc
+           :simulation sim
+           :drawing drawing)
     (vdom-swing/render (:drawing @globals/sim-state))))

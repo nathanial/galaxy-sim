@@ -67,9 +67,21 @@
       (.addComponentListener
         (proxy [ComponentAdapter] []
           (componentResized [e]
-            (.setBounds domView (Rectangle. 0 0 (.. panel size width) (.. panel size height))))
+            (let [width (.. panel size width)
+                  height (.. panel size height)]
+              (.add event-queue {
+                :event :window-resized
+                :width width
+                :height height})
+              (.setBounds domView (Rectangle. 0 0 width height))))
           (componentMoved [e]
-            (.setBounds domView (Rectangle. 0 0 (.. panel size width) (.. panel size height))))))
+            (let [width (.. panel size width)
+                  height (.. panel size height)]
+              (.add event-queue {
+                :event :window-moved
+                :width width
+              })
+              (.setBounds domView (Rectangle. 0 0 width height))))))
       )))
 
 (defn render [dom]
