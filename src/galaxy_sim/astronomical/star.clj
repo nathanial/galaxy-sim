@@ -5,7 +5,7 @@
 
 
 (defn- star-radius [star]
-  (let [sx (get-in globals/g2d-transform [:scale :x])]
+  (let [sx (get-in @globals/sim-state [:transform :scale :x])]
     (if (< sx 2)
       (/ 1 (expt sx 0.99))
       0.5)))
@@ -13,7 +13,6 @@
 (defn draw [star]
   (let [radius (star-radius star)
         color (:color star)]
-    (println "DRAW")
     {
       :type :ellipse
       :color color

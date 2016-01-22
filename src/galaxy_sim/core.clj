@@ -8,6 +8,10 @@
 (def red {:red 255 :green 0 :blue 0 :alpha 255})
 
 (defn -main [& args]
-  (binding [globals/g2d-transform {:scale {:x 0.25 :y 0.25}, :translate {:x 0 :y 0}}]
-    (let [sim (simulation/create)]
-      (vdom-swing/render (simulation/draw sim)))))
+  (let [sim (simulation/create)
+        drawing (simulation/draw sim)]
+    (dosync
+      (swap! globals/sim-state assoc
+             :simulation sim
+             :drawing drawing))
+    (vdom-swing/render (:drawing @globals/sim-state))))

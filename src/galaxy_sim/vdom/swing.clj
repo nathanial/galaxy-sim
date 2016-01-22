@@ -1,10 +1,13 @@
 (ns galaxy-sim.vdom.swing
   (:require [galaxy-sim.vdom.painter :as painter]
             [galaxy-sim.globals :as globals])
+  (:use [galaxy-sim.globals :only [event-queue]])
   (:import [javax.swing
             SwingUtilities JFrame JPanel JLabel
             JLayeredPane]
+           [javax.swing.event MouseInputAdapter]
            [java.awt Color BorderLayout Dimension RenderingHints Rectangle]
+           [java.awt.event MouseWheelListener MouseMotionAdapter ComponentAdapter]
            [java.awt.geom Ellipse2D$Double AffineTransform]))
 
 (defmacro invoke-later [& args]
@@ -45,6 +48,28 @@
       (.setLayout (BorderLayout. ))
       (.setBackground (Color/white))
       (.add pane)
+      (.addMouseWheelListener
+        (proxy [MouseWheelListener] []
+          (mouseWheelMoved [e]
+            (.add event-queue {:event :mouse-wheel :zoom (* (.wheelRotation e) (.scrollAmount e))}))))
+      (.addMouseMotionListener
+        (proxy [MouseMotionAdapter] []
+          (mouseMoved [e]
+            (.add event-queue {:event :mouse-move :x (.getX e) :y (.getY e)}))
+          (mouseDragged [e]
+            (.add event-queue {:event :mouse-drag :x (.getX e) :y (.getY e)}))))
+      (.addMouseListener
+        (proxy [MouseInputAdapter] []
+          (mousePressed [e]
+            (.add event-queue {:event :mouse-down, :x (.getX e), :y (.getY e)}))
+          (mouseReleased [e]
+            (.add event-queue {:event :mouse-up, :x (.getX e), :y (.getY e)}))))
+      (.addComponentListener
+        (proxy [ComponentAdapter] []
+          (componentResized [e]
+            (.setBounds domView (Rectangle. 0 0 (.. panel size width) (.. panel size height))))
+          (componentMoved [e]
+            (.setBounds domView (Rectangle. 0 0 (.. panel size width) (.. panel size height))))))
       )))
 
 (defn render [dom]

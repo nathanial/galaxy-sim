@@ -1,3 +1,10 @@
-(ns galaxy-sim.globals)
+(ns galaxy-sim.globals
+  (:import [java.util.concurrent ConcurrentLinkedQueue]))
 
-(def ^:dynamic g2d-transform {:scale {:x 1 :y 1}, :translate {:x 0 :y 0}})
+(def sim-state (atom {
+  :transform {:scale {:x 0.25 :y 0.25}, :translate {:x 0 :y 0}}
+  :simulation []
+  :drawing []
+}))
+
+(def event-queue (ConcurrentLinkedQueue.))
