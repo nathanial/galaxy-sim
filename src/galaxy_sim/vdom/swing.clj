@@ -1,14 +1,12 @@
 (ns galaxy-sim.vdom.swing
-  (:require [galaxy-sim.vdom.painter :as painter]
-            [galaxy-sim.globals :as globals])
-  (:use [galaxy-sim.globals :only [event-queue]])
+  (:require [galaxy-sim.vdom.painter :as painter])
+  (:use [galaxy-sim.events :only [event-queue]])
   (:import [javax.swing
-            SwingUtilities JFrame JPanel JLabel
-            JLayeredPane]
+            SwingUtilities JFrame JPanel JLayeredPane]
            [javax.swing.event MouseInputAdapter]
-           [java.awt Color BorderLayout Dimension RenderingHints Rectangle]
+           [java.awt Color BorderLayout Dimension RenderingHints Rectangle Graphics2D]
            [java.awt.event MouseWheelListener MouseMotionAdapter ComponentAdapter]
-           [java.awt.geom Ellipse2D$Double AffineTransform]))
+           [java.awt.geom AffineTransform]))
 
 (defmacro invoke-later [& args]
   `(SwingUtilities/invokeLater (fn [] ~@args)))
@@ -21,7 +19,7 @@
 
 (defn- create-dom-view [dom]
   (proxy [JPanel] []
-    (paintComponent [g]
+    (paintComponent [^Graphics2D g]
       (proxy-super paintComponent g)
       (doto g
         (.setRenderingHint RenderingHints/KEY_ANTIALIASING RenderingHints/VALUE_ANTIALIAS_ON)

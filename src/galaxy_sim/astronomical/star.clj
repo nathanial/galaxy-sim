@@ -1,10 +1,9 @@
 (ns galaxy-sim.astronomical.star
   (:use clojure.contrib.math)
-  (:require [galaxy-sim.globals :as globals])
-  (:import [java.util Random]))
+  (:require [galaxy-sim.globals :as globals]))
 
 
-(defn- star-radius [star]
+(defn- star-radius [_]
   (let [sx (get-in @globals/sim-state [:transform :scale :x])]
     (if (< sx 2)
       (/ 1 (expt sx 0.99))

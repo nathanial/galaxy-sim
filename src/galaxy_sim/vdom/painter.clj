@@ -1,14 +1,11 @@
 (ns galaxy-sim.vdom.painter
-  (:import [javax.swing
-            SwingUtilities JFrame JPanel JLabel
-            JLayeredPane]
-           [java.awt Color BorderLayout Dimension RenderingHints Rectangle]
+  (:import [java.awt Color Graphics2D]
            [java.awt.geom Ellipse2D$Double]))
 
-(defmulti paint-element (fn [graphics element] (:type element)))
+(defmulti paint-element (fn [_ element] (:type element)))
 
-(defmethod paint-element :ellipse [graphics element]
-  (let [[red green blue] (:color element)
+(defmethod paint-element :ellipse [^Graphics2D graphics element]
+  (let [[^Integer red ^Integer green ^Integer blue] (:color element)
         [a b c d] (:vertices element)
         shape (Ellipse2D$Double. a b c d)]
     (doto graphics

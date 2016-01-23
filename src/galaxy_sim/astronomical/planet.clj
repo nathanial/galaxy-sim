@@ -1,4 +1,5 @@
-(ns galaxy-sim.astronomical.planet)
+(ns galaxy-sim.astronomical.planet
+  (:import (java.util Random)))
 
 (defn in?
   "true if seq contains elm"
@@ -36,7 +37,7 @@
   }
 ])
 
-(defn size [random kind]
+(defn size [^Random random kind]
   (cond
     (in? [:earth, :desert, :oceanic, :volcanic, :barren, :arctic] kind)
     (+ 0.5 (* 0.1 (.nextDouble random)))
