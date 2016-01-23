@@ -15,4 +15,4 @@
     (swap! globals/sim-state assoc
            :simulation sim
            :drawing drawing)
-    (vdom-swing/render (:drawing @globals/sim-state))))
+    (vdom-swing/start-app)))

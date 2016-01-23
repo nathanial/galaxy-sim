@@ -1,5 +1,6 @@
 (ns galaxy-sim.vdom.swing
-  (:require [galaxy-sim.vdom.painter :as painter])
+  (:require [galaxy-sim.vdom.painter :as painter]
+            [galaxy-sim.globals :as globals])
   (:use [galaxy-sim.events :only [event-queue]])
   (:import [javax.swing
             SwingUtilities JFrame JPanel JLayeredPane]
@@ -33,10 +34,10 @@
     (getPreferredSize  []
       (Dimension. 1000 1000))))
 
-(defn- create-simulation-view [dom]
+(defn- create-simulation-view []
   (let [panel (JPanel. )
         pane (JLayeredPane.)
-        domView (create-dom-view dom)]
+        domView (create-dom-view (:drawing @globals/sim-state))]
     (doto domView
       (.setBounds (Rectangle. 0 0 1000 1000)))
     (doto pane
@@ -82,13 +83,29 @@
               (.setBounds domView (Rectangle. 0 0 width height))))))
       )))
 
-(defn render [dom]
+(defn paint-loop []
+  (let [old-state (atom nil)]
+    (loop []
+      (let [new-state @globals/sim-state]
+        (when (not= new-state @old-state)
+          (swap! old-state (fn [_] new-state))
+          ))
+      (Thread/sleep 16)
+      (recur))))
+
+
+(defn start-paint-listener []
+  (.start (Thread. paint-loop)))
+
+(defn start-app []
   (invoke-later
     (let [frame (JFrame. "Galactic Simulation")]
       (doto frame
         (.setResizable true)
         (.setDefaultCloseOperation JFrame/EXIT_ON_CLOSE)
         (.setBackground Color/white)
-        (.add (create-simulation-view dom))
+        (.add (create-simulation-view))
         (.pack)
-        (.show)))))
+        (.show)))
+    (start-paint-listener)))
+

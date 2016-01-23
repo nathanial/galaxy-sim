@@ -2,9 +2,9 @@
   (:use [galaxy-sim.globals :only [sim-state]])
   (:require [galaxy-sim.events :as events]))
 
-(defn- zoom-transform [transform amount]
-  (println "ZOOM" amount transform)
-  transform)
+(defn- zoom-transform [transform factor]
+  (let [{sx :x sy :y} (:scale transform)]
+    (assoc transform :scale {:x (* sx factor) :y (* sy factor)})))
 
 (defn zoom [amount]
   (swap! sim-state
