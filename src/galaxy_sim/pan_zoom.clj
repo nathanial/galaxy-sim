@@ -18,7 +18,7 @@
     ))
 
 (defn- zoom-transform [transform factor]
-  (let [{mouseX :x mouseY :y} (:mouse @swing.core/window-state)
+  (let [{mouseX :x mouseY :y} (:mouse @sim-state)
         at (create-affine-transform transform)
         pt (Point2D$Double.)]
     (doto at
@@ -40,22 +40,28 @@
     (zoom 1.1)))
 
 (defn pan [{:keys [x y]}]
-  (let [drag-start (:drag-start @swing.core/window-state)
-        at (create-affine-transform (:transform @sim-state))]
-    (doto at
-      (.translate (/ (- x (:x drag-start)) (.getScaleX at))
-                  (/ (- y (:y drag-start)) (.getScaleY at))))
-    (swap! swing.core/window-state #(assoc %1 :drag-start {:x x :y y}))
-    (swap! sim-state
-           (fn [{:keys [transform] :as old-state}]
+  (swap! sim-state
+         (fn [{:keys [transform] :as current-state}]
+           (let [drag-start (:drag-start current-state)
+                 at (create-affine-transform (:transform current-state))]
+             (doto at
+               (.translate (/ (- x (:x drag-start)) (.getScaleX at))
+                           (/ (- y (:y drag-start)) (.getScaleY at))))
              (let [new-transform (update-transform transform at)]
-               (assoc old-state :transform new-transform))))))
+               (-> current-state
+                   (assoc :transform new-transform)
+                   (assoc :drag-start {:x x :y y})))))))
 
-(defn start-drag [{:keys [x y]}]
-  (swap! swing.core/window-state #(assoc %1 :drag-start {:x x :y y})))
+(defn- start-drag [{:keys [x y]}]
+  (swap! sim-state #(assoc %1 :drag-start {:x x :y y})))
+
+(defn- stop-drag [{:keys [x y]}]
+  (swap! sim-state #(assoc %1 :drag-start nil)))
 
 (defn init []
   (swing.core/add-event-listener :mouse-wheel zoom-mouse-wheel)
   (swing.core/add-event-listener :mouse-drag pan)
-  (swing.core/add-event-listener :mouse-down start-drag))
+  (swing.core/add-event-listener :mouse-down start-drag)
+  (swing.core/add-event-listener :mouse-up stop-drag))
+
 

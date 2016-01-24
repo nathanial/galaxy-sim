@@ -11,11 +11,6 @@
 
 (def event-listeners (atom {}))
 
-(def window-state (atom {
- :window {:width 1000, :height 1000}
- :mouse {:x 0, :y 0, :pressed false}
-}))
-
 (defn- handle-events []
   (loop []
     (let [event (.poll event-queue)]
@@ -36,42 +31,6 @@
                (assoc listeners kind [func])
                (assoc listeners kind (conj kl func)))))))
 
-(add-event-listener
-  :mouse-move
-  (fn [{:keys [x y]}]
-    (swap! window-state #(-> %1
-                             (assoc-in [:mouse :x] x)
-                             (assoc-in [:mouse :y] y)))))
-
-(add-event-listener
-  :mouse-drag
-  (fn [{:keys [x y]}]
-    (swap! window-state #(-> %1
-                             (assoc-in [:mouse :x] x)
-                             (assoc-in [:mouse :y] y)))))
-
-(add-event-listener
-  :mouse-down
-  (fn [{:keys [x y]}]
-    (swap! window-state #(-> %1
-                            (assoc-in [:mouse :x] x)
-                            (assoc-in [:mouse :y] y)
-                            (assoc-in [:mouse :pressed] true)))))
-
-(add-event-listener
-  :mouse-up
-  (fn [{:keys [x y]}]
-    (swap! window-state #(-> %1
-                             (assoc-in [:mouse :x] x)
-                             (assoc-in [:mouse :y] y)
-                             (assoc-in [:mouse :pressed] false)))))
-
-(add-event-listener
-  :window-resized
-  (fn [{:keys [width height]}]
-    (swap! window-state #(-> %1
-                             (assoc-in [:window :width] width)
-                             (assoc-in [:window :height] height)))))
 
 (defn create-custom-component [paint]
   (proxy [JPanel] []

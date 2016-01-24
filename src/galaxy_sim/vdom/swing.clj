@@ -15,7 +15,7 @@
       (.scale (:x scale) (:y scale)))))
 
 (defn- paint-sim [^Graphics2D g sim]
-  (let [{width :width, height :height} (:window @swing.core/window-state)]
+  (let [{width :width, height :height} (:window @globals/sim-state)]
     (doto g
       (.setRenderingHint RenderingHints/KEY_ANTIALIASING RenderingHints/VALUE_ANTIALIAS_ON)
       (.setRenderingHint RenderingHints/KEY_RENDERING RenderingHints/VALUE_RENDER_QUALITY)
@@ -27,6 +27,12 @@
       (painter/paint-element g element))))
 
 (defn start-app []
+  (swing.core/add-event-listener
+    :window-resized
+     (fn [{:keys [width height]}]
+       (swap! globals/sim-state #(-> %1
+                                     (assoc-in [:window :width] width)
+                                     (assoc-in [:window :height] height)))))
   (let [old-state (atom nil)
         should-repaint #(not= @globals/sim-state @old-state)
         paint (fn [^Graphics2D g]
