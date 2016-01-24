@@ -56,11 +56,17 @@
                         (assoc-in [:mouse :x] x)
                         (assoc-in [:mouse :y] y))))
 
+(defn resize-window [{:keys [width height]}]
+  (send sim-state #(-> %1
+                       (assoc-in [:window :width] width)
+                       (assoc-in [:window :height] height))))
+
 (defn init []
   (events/add-event-listener :mouse-wheel zoom-mouse-wheel)
   (events/add-event-listener :mouse-move track-mouse)
   (events/add-event-listener :mouse-drag pan)
   (events/add-event-listener :mouse-down start-drag)
-  (events/add-event-listener :mouse-up stop-drag))
+  (events/add-event-listener :mouse-up stop-drag)
+  (events/add-event-listener :window-resized resize-window))
 
 
