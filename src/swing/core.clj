@@ -1,6 +1,7 @@
 (ns swing.core
-  (:import (javax.swing SwingUtilities)
-           (java.util.concurrent LinkedBlockingQueue))
+  (:import (javax.swing SwingUtilities JPanel)
+           (java.util.concurrent LinkedBlockingQueue)
+           (java.awt Graphics2D))
   (:use [com.rpl.specter]))
 
 (defmacro invoke-later [& args]
@@ -18,6 +19,11 @@
   :window-moved []
 }))
 
+(def window-state (atom {
+ :window {:width 1000, :height 1000}
+ :mouse {:x 0, :y 0, :pressed false}
+}))
+
 (defn- handle-events []
   (loop []
     (let [event (.poll event-queue)]
@@ -32,3 +38,16 @@
 
 (defn add-event-listener [kind func]
   (swap! event-listeners #(setval [kind END] [func] %1)))
+
+(add-event-listener
+  :mouse-move
+  (fn [{:keys [x y]}]
+    (swap! window-state #(-> %1
+                             (assoc-in [:mouse :x] x)
+                             (assoc-in [:mouse :y] y)))))
+
+(defn create-custom-component [paint]
+  (proxy [JPanel] []
+    (paintComponent [^Graphics2D g]
+      (proxy-super paintComponent g)
+      (paint g))))

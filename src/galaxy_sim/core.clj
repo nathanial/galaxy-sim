@@ -17,6 +17,4 @@
     (vdom-swing/start-app)))
 
 (defn -main [& args]
-  (swing.core/start-event-handler)
-  (swing.core/add-event-listener :mouse-move #(println "Mouse Move" %1))
-  (swing.frame/create "Test"))
+  (start-game))
