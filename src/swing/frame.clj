@@ -6,6 +6,12 @@
   (:use [galaxy-sim.events :as events])
   (:use [swing.core]))
 
+(defn corrected [event]
+  (let [x (.getX event)
+        y (.getY event)]
+    {:x (- x 8)
+     :y (- y 30)}))
+
 (defn add-listeners [frame]
   (doto frame
     (.addMouseWheelListener
@@ -15,15 +21,19 @@
     (.addMouseMotionListener
       (proxy [MouseMotionAdapter] []
         (mouseMoved [e]
-          (.add events/event-queue {:event :mouse-move :x (.getX e) :y (.getY e)}))
+          (let [{:keys [x y]} (corrected e)]
+            (.add events/event-queue {:event :mouse-move :x x :y y})))
         (mouseDragged [e]
-          (.add events/event-queue {:event :mouse-drag :x (.getX e) :y (.getY e)}))))
+          (let [{:keys [x y]} (corrected e)]
+            (.add events/event-queue {:event :mouse-drag :x x :y y})))))
     (.addMouseListener
       (proxy [MouseInputAdapter] []
         (mousePressed [e]
-          (.add events/event-queue {:event :mouse-down, :x (.getX e), :y (.getY e)}))
+          (let [{:keys [x y]} (corrected e)]
+            (.add events/event-queue {:event :mouse-down, :x x, :y y})))
         (mouseReleased [e]
-          (.add events/event-queue {:event :mouse-up, :x (.getX e), :y (.getY e)}))))
+          (let [{:keys [x y]} (corrected e)]
+            (.add events/event-queue {:event :mouse-up, :x x, :y y})))))
     (.addComponentListener
       (proxy [ComponentAdapter] []
         (componentResized [e]

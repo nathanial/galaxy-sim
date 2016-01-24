@@ -1,5 +1,9 @@
 X add pan/zoom
 X Redraw on transform change
 X Restore star colors
-Add buffered image
+X Add buffered image
+Translate without re-paint
+    Calculate real extent of simulation drawing
+    Split into tiles
+    Zoom then re-render
 Twinkle the stars
