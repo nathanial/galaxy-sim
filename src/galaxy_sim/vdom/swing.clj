@@ -3,7 +3,8 @@
             [galaxy-sim.globals :as globals]
             [galaxy-sim.vdom.canvas :as canvas]
             [swing.core]
-            [swing.frame])
+            [swing.frame]
+            [galaxy-sim.events :as events])
   (:import [java.awt Color RenderingHints Graphics2D]
            [java.awt.geom AffineTransform]))
 
@@ -27,7 +28,7 @@
       (painter/paint-element g element))))
 
 (defn start-app []
-  (swing.core/add-event-listener
+  (events/add-event-listener
     :window-resized
      (fn [{:keys [width height]}]
        (swap! globals/sim-state #(-> %1

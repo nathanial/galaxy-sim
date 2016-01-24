@@ -1,6 +1,7 @@
 (ns galaxy-sim.pan-zoom
   (:use [galaxy-sim.globals :only [sim-state]])
-  (:require [swing.core])
+  (:require [swing.core]
+            [galaxy-sim.events :as events])
   (:import (java.awt.geom AffineTransform Point2D$Double)))
 
 (defn- create-affine-transform [transform]
@@ -64,10 +65,10 @@
                         (assoc-in [:mouse :y] y))))
 
 (defn init []
-  (swing.core/add-event-listener :mouse-wheel zoom-mouse-wheel)
-  (swing.core/add-event-listener :mouse-move track-mouse)
-  (swing.core/add-event-listener :mouse-drag pan)
-  (swing.core/add-event-listener :mouse-down start-drag)
-  (swing.core/add-event-listener :mouse-up stop-drag))
+  (events/add-event-listener :mouse-wheel zoom-mouse-wheel)
+  (events/add-event-listener :mouse-move track-mouse)
+  (events/add-event-listener :mouse-drag pan)
+  (events/add-event-listener :mouse-down start-drag)
+  (events/add-event-listener :mouse-up stop-drag))
 
 

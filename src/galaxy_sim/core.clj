@@ -3,12 +3,13 @@
             [galaxy-sim.globals :as globals]
             [galaxy-sim.pan-zoom :as pan-zoom]
             [galaxy-sim.vdom.swing :as vdom-swing]
+            [galaxy-sim.events :as events]
             [swing.frame])
   (:gen-class))
 
 (defn start-game []
   (pan-zoom/init)
-  (swing.core/start-event-handler)
+  (events/start-event-handler)
   (let [sim (simulation/create)
         drawing (simulation/draw sim)]
     (swap! globals/sim-state assoc
