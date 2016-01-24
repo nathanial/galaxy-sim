@@ -1,1 +1,5 @@
 X add pan/zoom
+X Redraw on transform change
+X Restore star colors
+Add buffered image
+Twinkle the stars

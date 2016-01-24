@@ -8,6 +8,6 @@
     [org.clojars.nathell/clojure-contrib "1.2.0"]
     [com.rpl/specter "0.9.1"]
   ]
-  :main ^:skip-aot galaxy-sim.core
+  :main ^:skip-aot galaxy-sim.main
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}})

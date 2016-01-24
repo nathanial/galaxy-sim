@@ -1,6 +1,6 @@
 (ns swing.frame
   (:import (javax.swing JFrame)
-           (java.awt Color)
+           (java.awt Color Dimension)
            (java.awt.event MouseWheelListener MouseMotionAdapter ComponentAdapter)
            (javax.swing.event MouseInputAdapter))
   (:use [galaxy-sim.events :as events])
@@ -41,6 +41,6 @@
       (.setResizable true)
       (.setDefaultCloseOperation JFrame/EXIT_ON_CLOSE)
       (.setBackground Color/white)
+      (.setSize (Dimension. 1000 1000))
       (add-listeners)
-      (.pack)
       (.show))))

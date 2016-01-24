@@ -33,14 +33,14 @@
           planets (doall (take (rand-int 9) random-planets))
           asteroids []]
         {
-          :star {:color [255 0 0], :x (:x coords) :y (:y coords)}
+          :star {:color (rand-nth star/colors), :x (:x coords) :y (:y coords)}
           :planets planets
           :asteroids asteroids
           }))))
 
 (defn create []
   (binding [random (Random.)]
-    (doall (take 1000 random-systems))))
+    (doall (take 100000 random-systems))))
 
 (defn draw [sim]
   (doall

@@ -48,9 +48,6 @@
 (defn- start-drag [{:keys [x y]}]
   (send sim-state #(assoc %1 :drag-start {:x x :y y})))
 
-(defn- stop-drag [{:keys [x y]}]
-  (send sim-state #(assoc %1 :drag-start nil)))
-
 (defn- track-mouse [{:keys [x y]}]
   (send sim-state #(-> %1
                         (assoc-in [:mouse :x] x)
@@ -66,7 +63,7 @@
   (events/add-event-listener :mouse-move track-mouse)
   (events/add-event-listener :mouse-drag pan)
   (events/add-event-listener :mouse-down start-drag)
-  (events/add-event-listener :mouse-up stop-drag)
-  (events/add-event-listener :window-resized resize-window))
+  (events/add-event-listener :window-resized resize-window)
+  (events/add-event-listener :window-moved resize-window))
 
 

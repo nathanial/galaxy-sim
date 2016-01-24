@@ -1,4 +1,4 @@
-(ns galaxy-sim.core
+(ns galaxy-sim.main
   (:require [galaxy-sim.astronomical.simulation :as simulation]
             [galaxy-sim.globals :as globals]
             [galaxy-sim.pan-zoom :as pan-zoom]
@@ -21,12 +21,20 @@
 (defn- paint [^Graphics2D g]
   (paint-sim g @globals/sim-state))
 
+(defn redraw-listener [key reference old-state new-state]
+  (when (or (not= (:simulation old-state) (:simulation new-state))
+            (not= (get-in old-state [:transform :scale])
+                  (get-in new-state [:transform :scale])))
+    (println "REDRAW")
+    (send reference #(assoc %1 :drawing (simulation/draw (:simulation %1))))))
+
 (defn start-game []
   (pan-zoom/init)
   (events/start-event-handler)
   (let [sim (simulation/create)
         drawing (simulation/draw sim)]
     (send globals/sim-state assoc :simulation sim :drawing drawing)
+    (add-watch globals/sim-state :redraw redraw-listener)
     (swing.core/invoke-later
       (let [frame (swing.frame/create "Galactic Simulation")
             view (canvas/create should-repaint paint)]
