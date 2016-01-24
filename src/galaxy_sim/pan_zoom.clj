@@ -58,8 +58,14 @@
 (defn- stop-drag [{:keys [x y]}]
   (swap! sim-state #(assoc %1 :drag-start nil)))
 
+(defn- track-mouse [{:keys [x y]}]
+  (swap! sim-state #(-> %1
+                        (assoc-in [:mouse :x] x)
+                        (assoc-in [:mouse :y] y))))
+
 (defn init []
   (swing.core/add-event-listener :mouse-wheel zoom-mouse-wheel)
+  (swing.core/add-event-listener :mouse-move track-mouse)
   (swing.core/add-event-listener :mouse-drag pan)
   (swing.core/add-event-listener :mouse-down start-drag)
   (swing.core/add-event-listener :mouse-up stop-drag))

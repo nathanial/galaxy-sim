@@ -1,1 +1,1 @@
-add pan/zoom
+X add pan/zoom

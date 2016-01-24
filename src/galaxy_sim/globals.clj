@@ -5,5 +5,5 @@
   :simulation []
   :drawing []
   :window {:width 1000, :height 1000}
-  :mouse {:x 0, :y 0, :pressed false}
+  :mouse {:x 0 :y 0}
 }))

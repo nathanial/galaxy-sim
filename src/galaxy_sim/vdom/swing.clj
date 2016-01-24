@@ -34,7 +34,12 @@
                                      (assoc-in [:window :width] width)
                                      (assoc-in [:window :height] height)))))
   (let [old-state (atom nil)
-        should-repaint #(not= @globals/sim-state @old-state)
+        should-repaint (fn []
+                         (let [new-state @globals/sim-state
+                               old @old-state]
+                           (or (not= (:drawing new-state) (:drawing old))
+                               (not= (:transform new-state) (:transform old))
+                               (not= (:window new-state) (:window old)))))
         paint (fn [^Graphics2D g]
                 (let [new-state @globals/sim-state]
                   (swap! old-state (fn [_] new-state))
@@ -43,4 +48,3 @@
       (let [frame (swing.frame/create "Galactic Simulation")
             view (canvas/create should-repaint paint)]
         (.add frame view)))))
-
