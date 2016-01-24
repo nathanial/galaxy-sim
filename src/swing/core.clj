@@ -9,15 +9,7 @@
 
 (def ^LinkedBlockingQueue event-queue (LinkedBlockingQueue.))
 
-(def event-listeners (atom {
-  :mouse-move []
-  :mouse-drag []
-  :mouse-wheel []
-  :mouse-up []
-  :mouse-down []
-  :window-resized []
-  :window-moved []
-}))
+(def event-listeners (atom {}))
 
 (def window-state (atom {
  :window {:width 1000, :height 1000}
@@ -37,7 +29,12 @@
   (.start (Thread. handle-events)))
 
 (defn add-event-listener [kind func]
-  (swap! event-listeners #(setval [kind END] [func] %1)))
+  (swap! event-listeners
+         (fn [listeners]
+           (let [kl (kind listeners)]
+             (if (not kl)
+               (assoc listeners kind [func])
+               (assoc listeners kind (conj kl func)))))))
 
 (add-event-listener
   :mouse-move
