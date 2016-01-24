@@ -4,14 +4,6 @@
             [galaxy-sim.events :as events])
   (:import (java.awt.geom AffineTransform Point2D$Double)))
 
-(defn- create-affine-transform [transform]
-  (let [at (AffineTransform.)
-        {tx :x ty :y} (:translate transform)
-        {sx :x sy :y} (:scale transform)]
-    (doto at
-      (.translate tx ty)
-      (.scale sx sy))))
-
 (defn- update-transform [transform ^AffineTransform at]
   (assoc transform
     :scale {:x (.getScaleX at) :y (.getScaleY at)}
@@ -20,7 +12,7 @@
 
 (defn- zoom-transform [transform factor]
   (let [{mouseX :x mouseY :y} (:mouse @sim-state)
-        at (create-affine-transform transform)
+        at (swing.core/to-affine transform)
         pt (Point2D$Double.)]
     (doto at
       (.inverseTransform (Point2D$Double. mouseX mouseY) pt)
@@ -44,7 +36,7 @@
   (send sim-state
          (fn [{:keys [transform] :as current-state}]
            (let [drag-start (:drag-start current-state)
-                 at (create-affine-transform (:transform current-state))]
+                 at (swing.core/to-affine (:transform current-state))]
              (doto at
                (.translate (/ (- x (:x drag-start)) (.getScaleX at))
                            (/ (- y (:y drag-start)) (.getScaleY at))))
