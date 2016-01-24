@@ -1,6 +1,6 @@
 (ns galaxy-sim.pan-zoom
   (:use [galaxy-sim.globals :only [sim-state]])
-  (:require [galaxy-sim.events :as events]))
+  (:require [swing.core]))
 
 (defn- zoom-transform [transform factor]
   (let [{sx :x sy :y} (:scale transform)]
@@ -18,5 +18,5 @@
     (zoom 1.1)))
 
 (defn init []
-  (events/add-event-listener :mouse-wheel zoom-mouse-wheel))
+  (swing.core/add-event-listener :mouse-wheel zoom-mouse-wheel))
 
