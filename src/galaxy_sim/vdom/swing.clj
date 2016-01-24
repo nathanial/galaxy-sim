@@ -15,7 +15,6 @@
       (.scale (:x scale) (:y scale)))))
 
 (defn- paint-sim [^Graphics2D g sim]
-  (println "PAINT")
   (let [{width :width, height :height} (:window @swing.core/window-state)]
     (doto g
       (.setRenderingHint RenderingHints/KEY_ANTIALIASING RenderingHints/VALUE_ANTIALIAS_ON)

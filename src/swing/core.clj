@@ -46,6 +46,36 @@
                              (assoc-in [:mouse :x] x)
                              (assoc-in [:mouse :y] y)))))
 
+(add-event-listener
+  :mouse-drag
+  (fn [{:keys [x y]}]
+    (swap! window-state #(-> %1
+                             (assoc-in [:mouse :x] x)
+                             (assoc-in [:mouse :y] y)))))
+
+(add-event-listener
+  :mouse-down
+  (fn [{:keys [x y]}]
+    (swap! window-state #(-> %1
+                            (assoc-in [:mouse :x] x)
+                            (assoc-in [:mouse :y] y)
+                            (assoc-in [:mouse :pressed] true)))))
+
+(add-event-listener
+  :mouse-up
+  (fn [{:keys [x y]}]
+    (swap! window-state #(-> %1
+                             (assoc-in [:mouse :x] x)
+                             (assoc-in [:mouse :y] y)
+                             (assoc-in [:mouse :pressed] false)))))
+
+(add-event-listener
+  :window-resized
+  (fn [{:keys [width height]}]
+    (swap! window-state #(-> %1
+                             (assoc-in [:window :width] width)
+                             (assoc-in [:window :height] height)))))
+
 (defn create-custom-component [paint]
   (proxy [JPanel] []
     (paintComponent [^Graphics2D g]
