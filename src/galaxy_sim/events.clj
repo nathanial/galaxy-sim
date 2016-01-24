@@ -7,7 +7,7 @@
 
 (defn- handle-events []
   (loop []
-    (let [event (.poll event-queue)]
+    (let [event (.take event-queue)]
       (when event
         (let [kind (:event event)]
           (doseq [listener (kind @event-listeners)]

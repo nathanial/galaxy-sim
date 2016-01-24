@@ -12,9 +12,9 @@
   (events/start-event-handler)
   (let [sim (simulation/create)
         drawing (simulation/draw sim)]
-    (swap! globals/sim-state assoc
-           :simulation sim
-           :drawing drawing)
+    (send globals/sim-state assoc
+          :simulation sim
+          :drawing drawing)
     (vdom-swing/start-app)))
 
 (defn -main [& args]

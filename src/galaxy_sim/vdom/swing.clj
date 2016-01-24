@@ -31,19 +31,15 @@
   (events/add-event-listener
     :window-resized
      (fn [{:keys [width height]}]
-       (swap! globals/sim-state #(-> %1
+       (send globals/sim-state #(-> %1
                                      (assoc-in [:window :width] width)
                                      (assoc-in [:window :height] height)))))
-  (let [old-state (atom nil)
-        should-repaint (fn []
-                         (let [new-state @globals/sim-state
-                               old @old-state]
-                           (or (not= (:drawing new-state) (:drawing old))
-                               (not= (:transform new-state) (:transform old))
-                               (not= (:window new-state) (:window old)))))
+  (let [should-repaint (fn [old-state new-state]
+                         (or (not= (:drawing new-state) (:drawing old-state))
+                             (not= (:transform new-state) (:transform old-state))
+                             (not= (:window new-state) (:window old-state))))
         paint (fn [^Graphics2D g]
                 (let [new-state @globals/sim-state]
-                  (swap! old-state (fn [_] new-state))
                   (paint-sim g new-state)))]
     (swing.core/invoke-later
       (let [frame (swing.frame/create "Galactic Simulation")

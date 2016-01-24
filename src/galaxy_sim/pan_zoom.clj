@@ -30,7 +30,7 @@
     (update-transform transform at)))
 
 (defn zoom [amount]
-  (swap! sim-state
+  (send sim-state
          (fn [{:keys [transform] :as old-state}]
            (let [new-transform (zoom-transform transform amount)]
              (assoc old-state :transform new-transform)))))
@@ -41,7 +41,7 @@
     (zoom 1.1)))
 
 (defn pan [{:keys [x y]}]
-  (swap! sim-state
+  (send sim-state
          (fn [{:keys [transform] :as current-state}]
            (let [drag-start (:drag-start current-state)
                  at (create-affine-transform (:transform current-state))]
@@ -54,13 +54,13 @@
                    (assoc :drag-start {:x x :y y})))))))
 
 (defn- start-drag [{:keys [x y]}]
-  (swap! sim-state #(assoc %1 :drag-start {:x x :y y})))
+  (send sim-state #(assoc %1 :drag-start {:x x :y y})))
 
 (defn- stop-drag [{:keys [x y]}]
-  (swap! sim-state #(assoc %1 :drag-start nil)))
+  (send sim-state #(assoc %1 :drag-start nil)))
 
 (defn- track-mouse [{:keys [x y]}]
-  (swap! sim-state #(-> %1
+  (send sim-state #(-> %1
                         (assoc-in [:mouse :x] x)
                         (assoc-in [:mouse :y] y))))
 
