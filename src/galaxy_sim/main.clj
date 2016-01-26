@@ -7,11 +7,14 @@
             [galaxy-sim.vdom.painter :as painter]
             [galaxy-sim.vdom.canvas :as canvas])
   (:gen-class)
-  (:import (java.awt Graphics2D)))
+  (:import (java.awt Graphics2D RenderingHints)))
 
 (defn- paint-sim [^Graphics2D g sim]
-  (doseq [element (:drawing sim)]
-    (painter/paint-element g element)))
+  (let [transform (:transform sim)]
+    (doto g
+      (.setRenderingHint RenderingHints/KEY_ANTIALIASING RenderingHints/VALUE_ANTIALIAS_ON)
+      (.setRenderingHint RenderingHints/KEY_RENDERING RenderingHints/VALUE_RENDER_QUALITY))
+    (painter/paint-all g transform (:drawing sim))))
 
 (defn- should-repaint [old-state new-state]
   (or (not= (:drawing new-state) (:drawing old-state))
