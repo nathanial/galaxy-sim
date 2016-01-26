@@ -48,10 +48,14 @@
 (defn paint-all [^Graphics2D g transform elements]
   (let [cached (get @cached-paintings elements)]
     (if (not (nil? cached))
-      (let [old-transform (:transform cached)]
-        (println old-transform transform)
+      (let [old-transform (:transform cached)
+            new-transform {:translate {:x (- (get-in transform [:translate :x])
+                                             (get-in old-transform [:translate :x]))
+                                       :y (- (get-in transform [:translate :y])
+                                             (get-in old-transform [:translate :y]))}
+                           :scale     {:x 1.0 :y 1.0}}]
         (doto g
-          (.setTransform (swing.core/to-affine transform))
+          (.setTransform (swing.core/to-affine new-transform))
           (.drawImage (:image cached) 0 0 nil)))
       (doto g
         (.drawImage (:image (paint-and-cache transform elements)) 0 0 nil)))))
