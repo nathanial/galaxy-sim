@@ -1,7 +1,8 @@
 (ns swing.core
   (:import (javax.swing SwingUtilities JPanel)
-           (java.awt Graphics2D)
-           (java.awt.geom AffineTransform))
+           (java.awt Graphics2D GraphicsEnvironment Transparency)
+           (java.awt.geom AffineTransform)
+           (java.awt.image BufferedImage))
   (:use [com.rpl.specter]))
 
 (defmacro invoke-later [& args]
@@ -20,3 +21,16 @@
     (paintComponent [^Graphics2D g]
       (proxy-super paintComponent g)
       (paint g))))
+
+
+(defn ^BufferedImage create-compatible-image [width height]
+  (let [ge (GraphicsEnvironment/getLocalGraphicsEnvironment)
+        gs (.getDefaultScreenDevice ge)
+        gc (.getDefaultConfiguration gs)]
+    (.createCompatibleImage gc width height Transparency/OPAQUE)))
+
+(defn add-translations [& translations]
+  (to-affine
+    {:scale {:x 1 :y 1}
+     :translate {:x (apply + (map :x translations))
+                 :y (apply + (map :y translations))}}))
