@@ -7,24 +7,17 @@
 (defn- load-colors []
   (let [file (File. "resources/StarColorGradient.png")
         image (ImageIO/read file)]
-    (doall
-      (for [x (range 0 200)]
-        (let [clr (.getRGB image x 0)
-              red (bit-shift-right (bit-and clr 0x00ff0000) 16)
-              green (bit-shift-right (bit-and clr 0x0000ff00) 8)
-              blue (bit-and clr 0x000000ff)]
-          [red green blue])))))
+    (for [x (range 0 200)]
+      (let [clr (.getRGB image x 0)
+            red (bit-shift-right (bit-and clr 0x00ff0000) 16)
+            green (bit-shift-right (bit-and clr 0x0000ff00) 8)
+            blue (bit-and clr 0x000000ff)]
+        [red green blue]))))
 
 (def colors (load-colors))
 
-(defn- star-radius [_]
-  (let [sx (get-in @globals/sim-state [:transform :scale :x])]
-    (if (< sx 2)
-      (/ 1 (expt sx 0.99))
-      0.5)))
-
 (defn draw [star]
-  (let [radius (star-radius star)
+  (let [radius 0.5
         color (:color star)]
     {
       :type :circle

@@ -3,7 +3,7 @@
   (:require [galaxy-sim.astronomical.planet :as planet]
             [galaxy-sim.astronomical.star :as star]))
 
-(def ^:dynamic random nil)
+(def random (Random. ))
 
 (defn- create-coordinates []
   {
@@ -30,7 +30,7 @@
 (def random-systems
   (repeatedly (fn []
     (let [coords (create-coordinates)
-          planets (doall (take (rand-int 9) random-planets))
+          planets (take (rand-int 9) random-planets)
           asteroids []]
         {
           :star {:color (rand-nth star/colors), :x (:x coords) :y (:y coords)}
@@ -39,10 +39,8 @@
           }))))
 
 (defn create []
-  (binding [random (Random.)]
-    (doall (take 100000 random-systems))))
+  (take 100000 random-systems))
 
 (defn draw [sim]
-  (doall
-    (for [system sim]
-      (star/draw (:star system)))))
+  (for [system sim]
+    (star/draw (:star system))))
