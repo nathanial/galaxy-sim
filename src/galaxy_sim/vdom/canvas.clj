@@ -3,9 +3,8 @@
             [swing.core]
             [galaxy-sim.globals :as globals])
   (:import (javax.swing JPanel)
-           (java.awt Graphics2D RenderingHints Color Component GraphicsConfiguration GraphicsEnvironment Transparency)
-           (java.awt.geom AffineTransform)
-           (java.awt.image BufferedImage)))
+           (java.awt Graphics2D Color)
+           (java.awt.geom AffineTransform)))
 
 (defn- repaint-listener [should-repaint ^JPanel canvas]
   (fn [key reference old-state new-state]

@@ -28,7 +28,6 @@
   (when (or (not= (:simulation old-state) (:simulation new-state))
             (not= (get-in old-state [:transform :scale])
                   (get-in new-state [:transform :scale])))
-    (println "REDRAW")
     (send reference #(assoc %1 :drawing (simulation/draw (:simulation %1))))))
 
 (defn start-game []

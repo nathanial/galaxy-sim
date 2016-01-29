@@ -27,14 +27,10 @@
   (let [radius (star-radius star)
         color (:color star)]
     {
-      :type :ellipse
+      :type :circle
       :color color
       :radius radius
-      :vertices [
-        (- (:x star) radius)
-        (- (:y star) radius)
-        (* 2 radius)
-        (* 2 radius)
-      ]
+      :x (:x star)
+      :y (:y star)
       :fill true
     }))
