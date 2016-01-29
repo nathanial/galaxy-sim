@@ -22,9 +22,8 @@
 
 (defn paint-all [^Graphics2D g transform elements]
   (let [scale (:scale transform)
-        tiles (tiles/render-as-tiles scale elements)]
+        tiles (tiles/render-as-tiles scale elements paint-element)]
     (doseq [tile tiles]
-      (println "Tile" tile)
       (let [^BufferedImage image (:image tile)]
         (doto g
           (.setTransform (swing.core/add-translations (:translate transform) (:translate tile)))

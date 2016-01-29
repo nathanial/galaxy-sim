@@ -30,7 +30,7 @@
     (.createCompatibleImage gc width height Transparency/OPAQUE)))
 
 (defn add-translations [& translations]
-  (to-affine
-    {:scale {:x 1 :y 1}
-     :translate {:x (apply + (map :x translations))
-                 :y (apply + (map :y translations))}}))
+  (let [new-transform {:scale     {:x 1 :y 1}
+                       :translate {:x (apply + (map :x translations))
+                                   :y (apply + (map :y translations))}}]
+    (to-affine new-transform)))

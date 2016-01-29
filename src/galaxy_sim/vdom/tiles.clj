@@ -1,6 +1,6 @@
 (ns galaxy-sim.vdom.tiles
   (:use [com.rpl.specter])
-  (:import (java.awt RenderingHints)))
+  (:import (java.awt RenderingHints Graphics2D Color)))
 
 (defn abs [n] (max n (- n)))
 
@@ -35,21 +35,45 @@
      :height (abs (- min-y max-y))
      }))
 
+(defn- in-range [element {:keys [x y width height]}]
+  (and
+    (>= (:x element) x)
+    (<= (:x element) (+ x width))
+    (>= (:y element) y)
+    (<= (:y element) (+ y height))))
 
 (defn- split-into-tiles [scale elements]
   (let [bounds (determine-bounds scale elements)
         x-parts (Math/ceil (/ (:width bounds) tile-width))
-        y-parts (Math/ceil (/ (:height bounds) tile-height))]
+        y-parts (Math/ceil (/ (:height bounds) tile-height))
+        min-x (:x bounds)
+        min-y (:y bounds)]
     (for [x (range 0 x-parts)
           y (range 0 y-parts)]
-      {:translate {:x x :y y}})))
+      (let [tile-bounds {:x      (+ min-x (* x tile-width))
+                         :y      (+ min-y (* y tile-height))
+                         :width  tile-width
+                         :height tile-height}
+            tile-elements (->> elements
+                               (filter #(in-range %1 tile-bounds))
+                               (map #(assoc %1 :x (- (:x %1) (:x tile-bounds))
+                                              :y (- (:y %1) (:y tile-bounds)))))]
+        {:translate {:x (+ min-x (* tile-width x)) :y (+ min-y (* tile-height y))}
+         :elements  tile-elements}))))
 
-(defn render-tile [tile]
-  (let [image (swing.core/create-compatible-image tile-width tile-height)]
+(defn render-tile [tile paint-element]
+  (let [image (swing.core/create-compatible-image tile-width tile-height)
+        graphics (.createGraphics image)]
+    (doto graphics
+      (.setRenderingHint RenderingHints/KEY_ANTIALIASING RenderingHints/VALUE_ANTIALIAS_ON)
+      (.setRenderingHint RenderingHints/KEY_RENDERING RenderingHints/VALUE_RENDER_QUALITY))
+    (doseq [element (:elements tile)]
+      (paint-element graphics element))
+    (.dispose graphics)
     (assoc tile :image image)))
 
 (def render-as-tiles
   (memoize
-    (fn [scale elements]
+    (fn [scale elements paint-element]
       (for [tile (split-into-tiles scale elements)]
-        (render-tile tile)))))
+        (render-tile tile paint-element)))))
