@@ -21,7 +21,7 @@
       (.dispose))
     buffer))
 
-(defn- determine-bounds [scale elements]
+(defn- determine-bounds [elements]
   (let [x-coords (select [ALL :x] elements)
         y-coords (select [ALL :y] elements)
         min-x (apply min x-coords)
@@ -42,10 +42,15 @@
     (>= (:y element) y)
     (<= (:y element) (+ y height))))
 
-(defn- split-into-tiles [scale elements]
-  (let [bounds (determine-bounds scale elements)
-        x-parts (Math/ceil (/ (:width bounds) tile-width))
-        y-parts (Math/ceil (/ (:height bounds) tile-height))
+(defn- scale-elements [sx sy elements]
+  (->> elements
+       (map #(assoc %1 :x (* sx (:x %1))
+                       :y (* sy (:y %1))))))
+
+(defn- split-into-tiles [{sx :x sy :y} elements]
+  (let [bounds (determine-bounds elements)
+        x-parts (Math/ceil (/ (* sx (:width bounds)) tile-width))
+        y-parts (Math/ceil (/ (* sy (:height bounds)) tile-height))
         min-x (:x bounds)
         min-y (:y bounds)]
     (for [x (range 0 x-parts)
@@ -54,7 +59,7 @@
                          :y      (+ min-y (* y tile-height))
                          :width  tile-width
                          :height tile-height}
-            tile-elements (->> elements
+            tile-elements (->> (scale-elements sx sy elements)
                                (filter #(in-range %1 tile-bounds))
                                (map #(assoc %1 :x (- (:x %1) (:x tile-bounds))
                                               :y (- (:y %1) (:y tile-bounds)))))]

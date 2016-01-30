@@ -7,6 +7,7 @@
     [org.clojure/clojure "1.7.0"]
     [org.clojars.nathell/clojure-contrib "1.2.0"]
     [com.rpl/specter "0.9.1"]
+    [org.imgscalr/imgscalr-lib "4.2"]
   ]
   :main ^:skip-aot galaxy-sim.main
   :target-path "target/%s"

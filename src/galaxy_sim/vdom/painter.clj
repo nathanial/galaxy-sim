@@ -6,6 +6,8 @@
             [swing.core])
   (:use [com.rpl.specter]))
 
+(defn abs [n] (max n (- n)))
+
 (defmulti paint-element (fn [_ element] (:type element)))
 
 (defmethod paint-element :circle [^Graphics2D graphics element]
@@ -27,12 +29,26 @@
     (.translate (:x t2) (:y t2))
     ))
 
+(def scales [0.125 0.25 0.5 1.0 2.0 4.0 8.0])
+
+(defn- nearest-scale [x]
+  (let [distances (map (fn [s] {:scale s, :distance (abs (- x s))}) scales)
+        closest (apply min-key :distance distances)]
+    (:scale closest)))
+
+(defn- incremental-scale [{:keys [x y]}]
+  (let [result {:x (nearest-scale x) :y (nearest-scale y)}]
+    (println "Incremental Scale" x y result)
+    result))
+
 (defn paint-all [^Graphics2D g transform elements]
   (let [scale (:scale transform)
-        tiles (tiles/render-as-tiles {:x 1 :y 1} elements paint-element)]
+        tiles (tiles/render-as-tiles (incremental-scale scale) elements paint-element)]
     (doseq [tile tiles]
       (let [^BufferedImage image (:image tile)
             transform (create-transform scale (:translate transform) (:translate tile))]
         (doto g
           (.setTransform transform)
-          (.drawImage image 0 0 nil))))))
+          (.drawImage image 0 0 nil)
+          (.setColor Color/red)
+          (.drawRect 0 0 999 999))))))

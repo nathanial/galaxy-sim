@@ -3,8 +3,9 @@ X Translate without re-paint
     X Split into tiles
 
 X Zoom by scaling image
-Improve image scaling
+Incremental image scaling
+    Correct bounds
 Lazy tile generation
 
-
+Try HDR filter
 Twinkle the stars
