@@ -1,6 +1,6 @@
 (ns galaxy-sim.vdom.painter
   (:import [java.awt Color Graphics2D RenderingHints]
-           [java.awt.geom Ellipse2D$Double]
+           [java.awt.geom Ellipse2D$Double AffineTransform]
            (java.awt.image BufferedImage))
   (:require [galaxy-sim.vdom.tiles :as tiles]
             [swing.core])
@@ -20,11 +20,19 @@
     (when (:fill element)
       (.fill graphics shape))))
 
+(defn- create-transform [scale t1 t2]
+  (doto (AffineTransform.)
+    (.translate (:x t1) (:y t1))
+    (.scale (:x scale) (:y scale))
+    (.translate (:x t2) (:y t2))
+    ))
+
 (defn paint-all [^Graphics2D g transform elements]
   (let [scale (:scale transform)
-        tiles (tiles/render-as-tiles scale elements paint-element)]
+        tiles (tiles/render-as-tiles {:x 1 :y 1} elements paint-element)]
     (doseq [tile tiles]
-      (let [^BufferedImage image (:image tile)]
+      (let [^BufferedImage image (:image tile)
+            transform (create-transform scale (:translate transform) (:translate tile))]
         (doto g
-          (.setTransform (swing.core/add-translations (:translate transform) (:translate tile)))
+          (.setTransform transform)
           (.drawImage image 0 0 nil))))))

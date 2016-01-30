@@ -25,9 +25,7 @@
   (paint-sim g @globals/sim-state))
 
 (defn redraw-listener [key reference old-state new-state]
-  (when (or (not= (:simulation old-state) (:simulation new-state))
-            (not= (get-in old-state [:transform :scale])
-                  (get-in new-state [:transform :scale])))
+  (when (or (not= (:simulation old-state) (:simulation new-state)))
     (send reference #(assoc %1 :drawing (simulation/draw (:simulation %1))))))
 
 (defn start-game []

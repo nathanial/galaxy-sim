@@ -1,5 +1,6 @@
 (ns galaxy-sim.vdom.tiles
   (:use [com.rpl.specter])
+  (:require [swing.core])
   (:import (java.awt RenderingHints Graphics2D Color)))
 
 (defn abs [n] (max n (- n)))
@@ -14,8 +15,7 @@
   (let [buffer (swing.core/create-compatible-image width height)
         graphics (.createGraphics buffer)]
     (doto graphics
-      (.setRenderingHint RenderingHints/KEY_ANTIALIASING RenderingHints/VALUE_ANTIALIAS_ON)
-      (.setRenderingHint RenderingHints/KEY_RENDERING RenderingHints/VALUE_RENDER_QUALITY)
+      (swing.core/set-graphic-defaults)
       (.setTransform (swing.core/to-affine transform))
       (paint)
       (.dispose))
@@ -64,9 +64,7 @@
 (defn render-tile [tile paint-element]
   (let [image (swing.core/create-compatible-image tile-width tile-height)
         graphics (.createGraphics image)]
-    (doto graphics
-      (.setRenderingHint RenderingHints/KEY_ANTIALIASING RenderingHints/VALUE_ANTIALIAS_ON)
-      (.setRenderingHint RenderingHints/KEY_RENDERING RenderingHints/VALUE_RENDER_QUALITY))
+    (swing.core/set-graphic-defaults graphics)
     (doseq [element (:elements tile)]
       (paint-element graphics element))
     (.dispose graphics)

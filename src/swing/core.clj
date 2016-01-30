@@ -1,6 +1,6 @@
 (ns swing.core
   (:import (javax.swing SwingUtilities JPanel)
-           (java.awt Graphics2D GraphicsEnvironment Transparency)
+           (java.awt Graphics2D GraphicsEnvironment Transparency RenderingHints)
            (java.awt.geom AffineTransform)
            (java.awt.image BufferedImage))
   (:use [com.rpl.specter]))
@@ -34,3 +34,8 @@
                        :translate {:x (apply + (map :x translations))
                                    :y (apply + (map :y translations))}}]
     (to-affine new-transform)))
+
+(defn set-graphic-defaults [^Graphics2D g]
+  (doto g
+    (.setRenderingHint RenderingHints/KEY_ANTIALIASING RenderingHints/VALUE_ANTIALIAS_ON)
+    (.setRenderingHint RenderingHints/KEY_RENDERING RenderingHints/VALUE_RENDER_QUALITY)))

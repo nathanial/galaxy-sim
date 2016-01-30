@@ -1,9 +1,10 @@
-X add pan/zoom
-X Redraw on transform change
-X Restore star colors
-X Add buffered image
-Translate without re-paint
-    Calculate real extent of simulation drawing
-    Split into tiles
-    Zoom then re-render
+X Translate without re-paint
+    X Calculate real extent of simulation drawing
+    X Split into tiles
+
+X Zoom by scaling image
+Improve image scaling
+Lazy tile generation
+
+
 Twinkle the stars
