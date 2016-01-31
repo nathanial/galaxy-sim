@@ -7,8 +7,8 @@
 
 (defn- create-coordinates []
   {
-    :x (+ 0 (* 100 (.nextGaussian random)))
-    :y (+ 0 (* 100 (.nextGaussian random)))
+    :x (+ 2500 (* 1000 (.nextGaussian random)))
+    :y (+ 2500 (* 1000 (.nextGaussian random)))
   })
 
 (def random-planets
@@ -39,7 +39,7 @@
           }))))
 
 (defn create []
-  (take 1000 random-systems))
+  (take 100000 random-systems))
 
 (defn draw [sim]
   (for [system sim]

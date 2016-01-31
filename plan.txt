@@ -21,5 +21,8 @@ Twinkle the stars
 
 X Memoize individual tile creation
 X Render only visible tiles
+X Lazy tile generation
+Lazy tile generation on another thread (asynchronous)
+    Ideas: have available tiles collection (might be too tile specific)
+           have available renderables (render-list)
 
-Lazy tile generation

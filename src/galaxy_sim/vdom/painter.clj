@@ -1,14 +1,14 @@
 (ns galaxy-sim.vdom.painter
   (:use [com.rpl.specter])
   (:require [swing.core])
-  (:import (java.awt RenderingHints Graphics2D Color Rectangle)
+  (:import (java.awt Graphics2D Color Rectangle)
            (java.awt.image BufferedImage)
            (java.awt.geom AffineTransform Ellipse2D$Double)))
 
 (defn- abs [n] (max n (- n)))
 
-(def tile-width 100)
-(def tile-height 100)
+(def tile-width 1000)
+(def tile-height 1000)
 
 (defmulti ^:private paint-element (fn [_ element] (:type element)))
 
@@ -31,30 +31,8 @@
     (.translate (:x t2) (:y t2))
     ))
 
-(def ^:private scales (map #(/ %1 10) (range 1 51)))
-
-(defn- nearest-scale [x]
-  (let [distances (map (fn [s] {:scale s, :distance (abs (- x s))}) scales)
-        closest (apply min-key :distance distances)]
-    (:scale closest)))
-
-(defn- incremental-scale [{:keys [x y]}]
-  (let [result {:x (nearest-scale x) :y (nearest-scale y)}]
-    (println "Incremental Scale" x y result)
-    result))
-
 ; paint with scale only, not translation
 ; fixed size tile, elements centered within
-
-(defn- double-buffer [width height transform paint]
-  (let [buffer (swing.core/create-compatible-image width height)
-        graphics (.createGraphics buffer)]
-    (doto graphics
-      (swing.core/set-graphic-defaults)
-      (.setTransform (swing.core/to-affine transform))
-      (paint)
-      (.dispose))
-    buffer))
 
 (defn- determine-bounds [elements]
   (let [x-coords (select [ALL :x] elements)
@@ -78,24 +56,26 @@
     (<= (:y element) (+ y height))))
 
 
-(defn- split-into-tiles [elements]
-  (let [bounds (determine-bounds elements)
-        x-parts (/ (:width bounds) tile-width)
-        y-parts (/ (:height bounds) tile-height)
-        min-x (:x bounds)
-        min-y (:y bounds)]
-    (for [x (range 0 x-parts)
-          y (range 0 y-parts)]
-      (let [tile-bounds {:x      (+ min-x (* x tile-width))
-                         :y      (+ min-y (* y tile-height))
-                         :width  tile-width
-                         :height tile-height}
-            tile-elements (->> elements
-                               (filter #(in-range %1 tile-bounds))
-                               (map #(assoc %1 :x (- (:x %1) (:x tile-bounds))
-                                              :y (- (:y %1) (:y tile-bounds)))))]
-        {:translate {:x (+ min-x (* tile-width x)) :y (+ min-y (* tile-height y))}
-         :elements  tile-elements}))))
+(def ^:private split-into-tiles
+  (memoize
+    (fn [elements]
+      (let [bounds (determine-bounds elements)
+            x-parts (/ (:width bounds) tile-width)
+            y-parts (/ (:height bounds) tile-height)
+            min-x (:x bounds)
+            min-y (:y bounds)]
+        (for [x (range 0 x-parts)
+              y (range 0 y-parts)]
+          (let [tile-bounds {:x      (+ min-x (* x tile-width))
+                             :y      (+ min-y (* y tile-height))
+                             :width  tile-width
+                             :height tile-height}
+                tile-elements (->> elements
+                                   (filter #(in-range %1 tile-bounds))
+                                   (map #(assoc %1 :x (- (:x %1) (:x tile-bounds))
+                                                   :y (- (:y %1) (:y tile-bounds)))))]
+            {:translate {:x (+ min-x (* tile-width x)) :y (+ min-y (* tile-height y))}
+             :elements  tile-elements}))))))
 
 (def ^:private render-tile-image
   (memoize
@@ -126,17 +106,15 @@
 
 (defn- render-as-tiles [transform window elements]
   (let [viewport (determine-viewport transform window)]
-    (for [tile (split-into-tiles elements)]
+    (for [tile (->> (split-into-tiles elements) (filter #(is-visible? viewport %1)))]
       (let [image (render-tile-image (:elements tile))]
-        (assoc tile :image image
-                    :visible (is-visible? viewport tile))))))
+        (assoc tile :image image)))))
 
 (defn paint-all [^Graphics2D g transform window elements]
   (let [scale (:scale transform)
-        tiles (render-as-tiles transform window elements)
-        visible-tiles (filter :visible tiles)]
-    (println "Visible" (count visible-tiles) "/" (count tiles))
-    (doseq [tile visible-tiles]
+        tiles (render-as-tiles transform window elements)]
+    (println "Visible" (count tiles))
+    (doseq [tile tiles]
       (let [^BufferedImage image (:image tile)
             transform (create-transform scale (:translate transform) (:translate tile))]
         (doto g
