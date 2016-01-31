@@ -5,6 +5,12 @@ X Translate without re-paint
 X Zoom by scaling image
 Incremental image scaling
     Correct bounds
+    Increase DPI by chopping tile scale
+        Compare tile pixels to window pixels
+        As scale ratchets down, you want twice (X) as many tiles occupying the same space
+            Tiles could subdivide/split into quadrants, each with as many pixels as the parent
+            Remember the scale when the tile is created. Use that scale to size it properly in the viewport.
+            Memoize individual tile creation, not "tiles". That way we can filter out the ones not in view, while still caching.
 Lazy tile generation
 
 Try HDR filter

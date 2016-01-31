@@ -29,7 +29,7 @@
     (.translate (:x t2) (:y t2))
     ))
 
-(def scales [0.125 0.25 0.5 1.0 2.0 4.0 8.0])
+(def scales (map #(/ %1 10) (range 1 51)))
 
 (defn- nearest-scale [x]
   (let [distances (map (fn [s] {:scale s, :distance (abs (- x s))}) scales)
@@ -43,7 +43,7 @@
 
 (defn paint-all [^Graphics2D g transform elements]
   (let [scale (:scale transform)
-        tiles (tiles/render-as-tiles (incremental-scale scale) elements paint-element)]
+        tiles (tiles/render-as-tiles scale elements paint-element)]
     (doseq [tile tiles]
       (let [^BufferedImage image (:image tile)
             transform (create-transform scale (:translate transform) (:translate tile))]
