@@ -115,7 +115,6 @@
         trect (Rectangle. (:x trans) (:y trans) tile-width tile-height)]
     (.intersects vrect trect)))
 
-;result in galactic coordinates
 (defn- determine-viewport [transform window]
   (let [translate (:translate transform)
         scale (:scale transform)]
@@ -127,7 +126,6 @@
 
 (defn- render-as-tiles [transform window elements]
   (let [viewport (determine-viewport transform window)]
-    (println "Viewport" viewport)
     (for [tile (split-into-tiles elements)]
       (let [image (render-tile-image (:elements tile))]
         (assoc tile :image image
