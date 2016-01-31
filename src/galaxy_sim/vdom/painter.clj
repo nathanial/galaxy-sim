@@ -1,12 +1,14 @@
 (ns galaxy-sim.vdom.painter
-  (:import [java.awt Color Graphics2D RenderingHints]
-           [java.awt.geom Ellipse2D$Double AffineTransform]
-           (java.awt.image BufferedImage))
-  (:require [galaxy-sim.vdom.tiles :as tiles]
-            [swing.core])
-  (:use [com.rpl.specter]))
+  (:use [com.rpl.specter])
+  (:require [swing.core])
+  (:import (java.awt RenderingHints Graphics2D Color)
+           (java.awt.image BufferedImage)
+           (java.awt.geom AffineTransform Ellipse2D$Double)))
 
 (defn abs [n] (max n (- n)))
+
+(def tile-width 1000)
+(def tile-height 1000)
 
 (defmulti paint-element (fn [_ element] (:type element)))
 
@@ -41,9 +43,79 @@
     (println "Incremental Scale" x y result)
     result))
 
+; paint with scale only, not translation
+; fixed size tile, elements centered within
+
+(defn- double-buffer [width height transform paint]
+  (let [buffer (swing.core/create-compatible-image width height)
+        graphics (.createGraphics buffer)]
+    (doto graphics
+      (swing.core/set-graphic-defaults)
+      (.setTransform (swing.core/to-affine transform))
+      (paint)
+      (.dispose))
+    buffer))
+
+(defn- determine-bounds [elements]
+  (let [x-coords (select [ALL :x] elements)
+        y-coords (select [ALL :y] elements)
+        min-x (apply min x-coords)
+        max-x (apply max x-coords)
+        min-y (apply min y-coords)
+        max-y (apply max y-coords)]
+    {
+     :x min-x,
+     :y min-y,
+     :width (abs (- min-x max-x)),
+     :height (abs (- min-y max-y))
+     }))
+
+(defn- in-range [element {:keys [x y width height]}]
+  (and
+    (>= (:x element) x)
+    (<= (:x element) (+ x width))
+    (>= (:y element) y)
+    (<= (:y element) (+ y height))))
+
+
+(defn- split-into-tiles [elements]
+  (let [bounds (determine-bounds elements)
+        x-parts (/ (:width bounds) tile-width)
+        y-parts (/ (:height bounds) tile-height)
+        min-x (:x bounds)
+        min-y (:y bounds)]
+    (for [x (range 0 x-parts)
+          y (range 0 y-parts)]
+      (let [tile-bounds {:x      (+ min-x (* x tile-width))
+                         :y      (+ min-y (* y tile-height))
+                         :width  tile-width
+                         :height tile-height}
+            tile-elements (->> elements
+                               (filter #(in-range %1 tile-bounds))
+                               (map #(assoc %1 :x (- (:x %1) (:x tile-bounds))
+                                              :y (- (:y %1) (:y tile-bounds)))))]
+        {:translate {:x (+ min-x (* tile-width x)) :y (+ min-y (* tile-height y))}
+         :elements  tile-elements}))))
+
+(def render-tile-image
+  (memoize
+    (fn [elements]
+      (let [image (swing.core/create-compatible-image tile-width tile-height)
+            graphics (.createGraphics image)]
+        (swing.core/set-graphic-defaults graphics)
+        (doseq [element elements]
+          (paint-element graphics element))
+        (.dispose graphics)
+        image))))
+
+(defn render-as-tiles [elements]
+  (for [tile (split-into-tiles elements)]
+    (let [image (render-tile-image (:elements tile))]
+      (assoc tile :image image))))
+
 (defn paint-all [^Graphics2D g transform elements]
   (let [scale (:scale transform)
-        tiles (tiles/render-as-tiles scale elements paint-element)]
+        tiles (render-as-tiles elements)]
     (doseq [tile tiles]
       (let [^BufferedImage image (:image tile)
             transform (create-transform scale (:translate transform) (:translate tile))]

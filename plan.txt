@@ -15,3 +15,9 @@ Lazy tile generation
 
 Try HDR filter
 Twinkle the stars
+
+
+
+----- TODAY
+
+Memoize individual tile creation
