@@ -1,18 +1,18 @@
 (ns galaxy-sim.vdom.painter
   (:use [com.rpl.specter])
   (:require [swing.core])
-  (:import (java.awt RenderingHints Graphics2D Color)
+  (:import (java.awt RenderingHints Graphics2D Color Rectangle)
            (java.awt.image BufferedImage)
            (java.awt.geom AffineTransform Ellipse2D$Double)))
 
-(defn abs [n] (max n (- n)))
+(defn- abs [n] (max n (- n)))
 
-(def tile-width 1000)
-(def tile-height 1000)
+(def tile-width 100)
+(def tile-height 100)
 
-(defmulti paint-element (fn [_ element] (:type element)))
+(defmulti ^:private paint-element (fn [_ element] (:type element)))
 
-(defmethod paint-element :circle [^Graphics2D graphics element]
+(defmethod ^:private paint-element :circle [^Graphics2D graphics element]
   (let [[^Integer red ^Integer green ^Integer blue alpha?] (:color element)
         ^Integer alpha (if (nil? alpha?) 255 alpha?)
         x (:x element)
@@ -31,7 +31,7 @@
     (.translate (:x t2) (:y t2))
     ))
 
-(def scales (map #(/ %1 10) (range 1 51)))
+(def ^:private scales (map #(/ %1 10) (range 1 51)))
 
 (defn- nearest-scale [x]
   (let [distances (map (fn [s] {:scale s, :distance (abs (- x s))}) scales)
@@ -97,9 +97,10 @@
         {:translate {:x (+ min-x (* tile-width x)) :y (+ min-y (* tile-height y))}
          :elements  tile-elements}))))
 
-(def render-tile-image
+(def ^:private render-tile-image
   (memoize
     (fn [elements]
+      (println "RENDER THE BEAST")
       (let [image (swing.core/create-compatible-image tile-width tile-height)
             graphics (.createGraphics image)]
         (swing.core/set-graphic-defaults graphics)
@@ -108,19 +109,40 @@
         (.dispose graphics)
         image))))
 
-(defn render-as-tiles [elements]
-  (for [tile (split-into-tiles elements)]
-    (let [image (render-tile-image (:elements tile))]
-      (assoc tile :image image))))
+(defn- is-visible? [{:keys [x y width height]} tile]
+  (let [vrect (Rectangle. x y width height)
+        trans (:translate tile)
+        trect (Rectangle. (:x trans) (:y trans) tile-width tile-height)]
+    (.intersects vrect trect)))
 
-(defn paint-all [^Graphics2D g transform elements]
+;result in galactic coordinates
+(defn- determine-viewport [transform window]
+  (let [translate (:translate transform)
+        scale (:scale transform)]
+    {:x      (/ (- (:x translate)) (:x scale))
+     :y      (/ (- (:y translate)) (:y scale))
+     :width  (/ (:width window) (:x scale))
+     :height (/ (:height window) (:y scale))
+     }))
+
+(defn- render-as-tiles [transform window elements]
+  (let [viewport (determine-viewport transform window)]
+    (println "Viewport" viewport)
+    (for [tile (split-into-tiles elements)]
+      (let [image (render-tile-image (:elements tile))]
+        (assoc tile :image image
+                    :visible (is-visible? viewport tile))))))
+
+(defn paint-all [^Graphics2D g transform window elements]
   (let [scale (:scale transform)
-        tiles (render-as-tiles elements)]
-    (doseq [tile tiles]
+        tiles (render-as-tiles transform window elements)
+        visible-tiles (filter :visible tiles)]
+    (println "Visible" (count visible-tiles) "/" (count tiles))
+    (doseq [tile visible-tiles]
       (let [^BufferedImage image (:image tile)
             transform (create-transform scale (:translate transform) (:translate tile))]
         (doto g
           (.setTransform transform)
           (.drawImage image 0 0 nil)
           (.setColor Color/red)
-          (.drawRect 0 0 999 999))))))
+          (.drawRect 0 0 (dec tile-width) (dec tile-height)))))))

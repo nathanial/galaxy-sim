@@ -20,4 +20,5 @@ Twinkle the stars
 
 ----- TODAY
 
-Memoize individual tile creation
+X Memoize individual tile creation
+X Render only visible tiles

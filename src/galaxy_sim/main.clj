@@ -14,7 +14,7 @@
     (doto g
       (.setRenderingHint RenderingHints/KEY_ANTIALIASING RenderingHints/VALUE_ANTIALIAS_ON)
       (.setRenderingHint RenderingHints/KEY_RENDERING RenderingHints/VALUE_RENDER_QUALITY))
-    (painter/paint-all g transform (:drawing sim))))
+    (painter/paint-all g transform (:window sim) (:drawing sim))))
 
 (defn- should-repaint [old-state new-state]
   (or (not= (:drawing new-state) (:drawing old-state))
