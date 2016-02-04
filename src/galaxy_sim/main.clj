@@ -6,25 +6,28 @@
             [swing.frame]
             [galaxy-sim.vdom.painter :as painter]
             [galaxy-sim.vdom.tile-renderer :as tile-renderer])
-  (:gen-class)
-  (:import (java.awt Graphics2D RenderingHints Color)
-           (javax.swing JPanel)
-           (java.awt.image BufferedImage)))
+  (:import (java.awt Graphics2D Color)
+           (java.awt.image BufferedImage)
+           (java.util.concurrent Executors ExecutorService)
+           (com.sun.org.apache.xerces.internal.jaxp JAXPConstants)
+           (javax.swing JPanel))
+  (:gen-class))
+
+(def drawables (atom []))
+
+(def ^ExecutorService render-pool (Executors/newFixedThreadPool 16))
 
 (defn- paint-sim [^Graphics2D g]
   (let [sim @globals/sim-state
         transform (:transform sim)
-        scale (:scale transform)
-        tiles (tile-renderer/render-as-tiles transform (:window sim) (:drawing sim))]
+        scale (:scale transform)]
     (swing.core/set-graphic-defaults g)
-    (doseq [tile tiles]
-      (let [^BufferedImage image (:image tile)
-            transform (painter/create-transform scale (:translate transform) (:translate tile))]
+    (doseq [d @drawables]
+      (let [^BufferedImage image (:image d)
+            transform (painter/create-transform scale (:translate transform) (:translate d))]
         (doto g
           (.setTransform transform)
-          (.drawImage image 0 0 nil)
-          (.setColor Color/red)
-          (.drawRect 0 0 (dec tile-renderer/tile-width) (dec tile-renderer/tile-height)))))))
+          (.drawImage image 0 0 nil))))))
 
 (defn- should-repaint [old-state new-state]
   (or (not= (:drawing new-state) (:drawing old-state))
@@ -43,12 +46,21 @@
                    (send reference #(assoc %1 :drawing (simulation/draw (:simulation %1)))))))
     (swing.core/invoke-later
       (let [frame (swing.frame/create "Galactic Simulation")
-            view (swing.core/create-custom-component paint-sim)]
+            ^JPanel view (swing.core/create-custom-component paint-sim)]
+        (add-watch drawables :redraw (fn [k r old-state new-state]
+                                       (println "REPAINT")
+                                       (swing.core/invoke-later
+                                         (.repaint view))))
         (add-watch globals/sim-state :canvas-repaint
-                   (fn [key reference old-state new-state]
+                   (fn [k r old-state new-state]
                      (when (should-repaint old-state new-state)
-                       (swing.core/invoke-later
-                         (.repaint view)))))
+                       (.submit render-pool
+                                ^Callable (fn []
+                                            (let [tiles (doall (tile-renderer/render-as-tiles
+                                                                 (:transform new-state)
+                                                                 (:window new-state)
+                                                                 (:drawing new-state)))]
+                                              (swap! drawables (fn [_] tiles))))))))
         (.add frame view)))))
 
 (defn -main [& args]

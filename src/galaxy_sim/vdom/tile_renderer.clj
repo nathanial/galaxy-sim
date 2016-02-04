@@ -1,7 +1,8 @@
 (ns galaxy-sim.vdom.tile-renderer
   (:use [com.rpl.specter])
   (:require [galaxy-sim.vdom.painter :as painter])
-  (:import (java.awt Rectangle)))
+  (:import (java.awt Rectangle)
+           (java.util.concurrent Executor Executors)))
 
 (defn- abs [n] (max n (- n)))
 
@@ -54,7 +55,6 @@
 (def ^:private render-tile-image
   (memoize
     (fn [elements]
-      (println "RENDER THE BEAST")
       (let [image (swing.core/create-compatible-image tile-width tile-height)
             graphics (.createGraphics image)]
         (swing.core/set-graphic-defaults graphics)
@@ -78,11 +78,13 @@
      :height (/ (:height window) (:y scale))
      }))
 
+
 ;make this method asynchronous?
 ;maybe return a channel of tiles
 ;maybe a draw chan that takes {:transform, :image} arguments
 (defn render-as-tiles [transform window elements]
-  (let [viewport (determine-viewport transform window)]
-    (for [tile (->> (split-into-tiles elements) (filter #(is-visible? viewport %1)))]
-      (let [image (render-tile-image (:elements tile))]
-        (assoc tile :image image)))))
+  (let [viewport (determine-viewport transform window)
+        render-image (fn [tile]
+                       (let [image (render-tile-image (:elements tile))]
+                         (assoc tile :image image)))]
+    (pmap render-image (->> (split-into-tiles elements) (filter #(is-visible? viewport %1))))))
