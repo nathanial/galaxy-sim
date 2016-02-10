@@ -11,9 +11,11 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = galaxy-sim
 TEMPLATE = app
 
+QMAKE_CXX = clang
+
 CONFIG += c++14
 
-INCLUDEPATH += src/agg/include
+INCLUDEPATH += src/agg/include src/galaxy
 
 
 FORMS    += src/mainwindow.ui
@@ -160,7 +162,8 @@ HEADERS += \
     src/agg/include/agg_vpgen_clip_polygon.h \
     src/agg/include/agg_vpgen_clip_polyline.h \
     src/agg/include/agg_vpgen_segmentator.h \
-    src/mainwindow.h
+    src/mainwindow.h \
+    src/galaxy/galaxy.hpp
 
 SOURCES += \
     src/agg/src/ctrl/agg_bezier_ctrl.cpp \
@@ -198,4 +201,5 @@ SOURCES += \
     src/agg/src/agg_vpgen_clip_polyline.cpp \
     src/agg/src/agg_vpgen_segmentator.cpp \
     src/main.cpp \
-    src/mainwindow.cpp
+    src/mainwindow.cpp \
+    src/galaxy/galaxy.cpp
