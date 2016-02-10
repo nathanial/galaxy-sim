@@ -12,26 +12,46 @@
 #include "agg_pixfmt_rgb.h"
 #include "platform/agg_platform_support.h"
 #include <QPainter>
+#include <QTimer>
+#include <QPaintEvent>
+#include <QResizeEvent>
+
+#include <stdlib.h>
 
 //AGG_BGR24
 
+const int r1 = rand();
+const int r2 = rand();
+const int r3 = rand();
+int count = 0;
 
-static const int frame_width = 320;
-static const int frame_height = 200;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow){
     ui->setupUi(this);
-    this->aggBuffer = new unsigned char[frame_width * frame_height * 3];
+    std::cout << this->width() << " " << this->height() << std::endl;
+
+    QTimer *timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(repaint()));
+    timer->start(16);
 }
 
 MainWindow::~MainWindow(){
     delete ui;
-    delete [] this->aggBuffer;
+}
+
+void MainWindow::resizeEvent(QResizeEvent *event){
+    const QSize& size = event->oldSize();
 }
 
 void MainWindow::paintEvent(QPaintEvent *event){
+    this->render(event);
+}
+
+void MainWindow::render(QPaintEvent *event){
+    const QRect & rect = event->rect();
+    unsigned char aggBuffer[rect.width() * rect.height() * 3];
 
     agg::rasterizer_scanline_aa<> pf;
     agg::scanline_p8 sl;
@@ -40,30 +60,33 @@ void MainWindow::paintEvent(QPaintEvent *event){
     typedef agg::renderer_base<pixfmt> renderer_base;
 
 
-    memset(this->aggBuffer, 255, frame_width * frame_height * 3);
-
-    agg::rendering_buffer rbuf(this->aggBuffer,
-                               frame_width,
-                               frame_height,
-                               frame_width * 3);
+    agg::rendering_buffer rbuf(aggBuffer,
+                               rect.width(),
+                               rect.height(),
+                               rect.width() * 3);
 
     pixfmt pixf(rbuf);
     renderer_base rb(pixf);
 
     rb.clear(agg::rgba(1,1,1));
 
-    agg::ellipse e1;
     //agg::conv_transform<agg::ellipse> t1(e1, trans_affine_());
 
-
     double alpha = 1.0;
-    e1.init(50, 50, 5, 5, 8);
-    pf.add_path(e1);
-    agg::render_scanlines_aa_solid(
-        pf, sl, rb,
-        agg::rgba(0.5, 0.5, 0.5, 1.0));
+    for(int i = 0; i < 90000; i++){
+        agg::ellipse e1;
+        e1.init((i % 385) * 5 + 5, (i / 385) * 5 + 10, 2, 2, 5);
+        pf.add_path(e1);
+        pf.close_polygon();
+        agg::render_scanlines_aa_solid(
+            pf, sl, rb,
+            agg::rgba(((r1 + i) + count % 1000) / 1000.0,
+                      ((r2 + i) + count % 1000) / 1000.0,
+                      ((r3 + i) - count % 1000) / 1000.0, 1.0));
+    }
+    count += 5;
 
-    QImage image(this->aggBuffer, frame_width, frame_height, QImage::Format_RGB888);
+    QImage image(aggBuffer, rect.width(), rect.height(), rect.width() * 3, QImage::Format_RGB888);
     QPainter painter(this);
     painter.drawImage(QPointF(0,0), image);
 }
