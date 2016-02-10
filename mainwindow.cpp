@@ -69,23 +69,34 @@ void MainWindow::render(QPaintEvent *event){
     pixfmt pixf(rbuf);
     renderer_base rb(pixf);
 
-    rb.clear(agg::rgba(1,1,1));
+    rb.clear(agg::rgba(0,0,0));
 
     //agg::conv_transform<agg::ellipse> t1(e1, trans_affine_());
 
     double alpha = 1.0;
-    for(int i = 0; i < 90000; i++){
-        agg::ellipse e1;
-        e1.init((i % 385) * 5 + 5, (i / 385) * 5 + 10, 2, 2, 5);
-        pf.add_path(e1);
-        pf.close_polygon();
-        agg::render_scanlines_aa_solid(
-            pf, sl, rb,
-            agg::rgba(((r1 + i) + count % 1000) / 1000.0,
-                      ((r2 + i) + count % 1000) / 1000.0,
-                      ((r3 + i) - count % 1000) / 1000.0, 1.0));
+//    for(int i = 0; i < 90000; i++){
+//        agg::ellipse e1;
+//        e1.init((i % 385) * 5 + 5, (i / 385) * 5 + 10, 2, 2, 5);
+//        pf.add_path(e1);
+//        pf.close_polygon();
+//        agg::render_scanlines_aa_solid(
+//            pf, sl, rb,
+//            agg::rgba(((r1 + i) + count % 1000) / 1000.0,
+//                      ((r2 + i) + count % 1000) / 1000.0,
+//                      ((r3 + i) - count % 1000) / 1000.0, 1.0));
+//    }
+
+    std::cout << "Sine(rand) = " << (sin(rand()) + 1) / 2 << std::endl;
+
+    for(int i = 0; i < rbuf.height() - 3; i += 3){
+        for(int j = 0; j < rbuf.width() - 3; j += 3){
+          unsigned char* ptr = rbuf.row_ptr(i) + j * 3;
+          *ptr++ = 255 * ((sin((i + j + count) / 1000.0) + 1) / 2);
+          *ptr++ = 255 * ((sin((i + j + count) / 1000.0 + 100) + 1) / 2);
+          *ptr++ = 255 * ((sin((i + j + count) / 1000.0 + 200) + 1) / 2);
+        }
     }
-    count += 5;
+    count += rand() / 10000000.0;
 
     QImage image(this->aggBuffer.get(), rect.width(), rect.height(), rect.width() * 3, QImage::Format_RGB888);
     QPainter painter(this);

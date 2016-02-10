@@ -194,3 +194,6 @@ HEADERS  += mainwindow.h \
     agg/include/agg_vpgen_segmentator.h
 
 FORMS    += mainwindow.ui
+
+DISTFILES += \
+    TODO.txt

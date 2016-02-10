@@ -4,6 +4,8 @@
 #include <QMainWindow>
 #include <memory>
 
+class QImage;
+
 namespace Ui {
 class MainWindow;
 }
