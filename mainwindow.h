@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <memory>
 
 namespace Ui {
 class MainWindow;
@@ -22,6 +23,7 @@ protected:
 private:
     Ui::MainWindow *ui;
     void render(QPaintEvent *event);
+    std::unique_ptr<unsigned char []> aggBuffer;
 
 };
 

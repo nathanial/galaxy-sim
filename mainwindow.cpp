@@ -31,6 +31,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow){
     ui->setupUi(this);
     std::cout << this->width() << " " << this->height() << std::endl;
+    this->aggBuffer.reset(new unsigned char[this->width() * this->height() * 3]);
 
     QTimer *timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(repaint()));
@@ -42,7 +43,8 @@ MainWindow::~MainWindow(){
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event){
-    const QSize& size = event->oldSize();
+    const QSize& size = event->size();
+    this->aggBuffer.reset(new unsigned char [size.width() * size.height() * 3]);
 }
 
 void MainWindow::paintEvent(QPaintEvent *event){
@@ -51,7 +53,6 @@ void MainWindow::paintEvent(QPaintEvent *event){
 
 void MainWindow::render(QPaintEvent *event){
     const QRect & rect = event->rect();
-    unsigned char aggBuffer[rect.width() * rect.height() * 3];
 
     agg::rasterizer_scanline_aa<> pf;
     agg::scanline_p8 sl;
@@ -60,7 +61,7 @@ void MainWindow::render(QPaintEvent *event){
     typedef agg::renderer_base<pixfmt> renderer_base;
 
 
-    agg::rendering_buffer rbuf(aggBuffer,
+    agg::rendering_buffer rbuf(this->aggBuffer.get(),
                                rect.width(),
                                rect.height(),
                                rect.width() * 3);
@@ -86,7 +87,7 @@ void MainWindow::render(QPaintEvent *event){
     }
     count += 5;
 
-    QImage image(aggBuffer, rect.width(), rect.height(), rect.width() * 3, QImage::Format_RGB888);
+    QImage image(this->aggBuffer.get(), rect.width(), rect.height(), rect.width() * 3, QImage::Format_RGB888);
     QPainter painter(this);
     painter.drawImage(QPointF(0,0), image);
 }
