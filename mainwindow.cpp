@@ -30,6 +30,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow){
     ui->setupUi(this);
+    this->setAttribute(Qt::WA_OpaquePaintEvent);
+    this->setAttribute(Qt::WA_NoSystemBackground);
     std::cout << this->width() << " " << this->height() << std::endl;
     this->aggBuffer.reset(new unsigned char[this->width() * this->height() * 3]);
 
@@ -89,8 +91,9 @@ void MainWindow::render(QPaintEvent *event){
     std::cout << "Sine(rand) = " << (sin(rand()) + 1) / 2 << std::endl;
 
     for(int i = 0; i < rbuf.height() - 3; i += 3){
+        unsigned char * row_ptr = rbuf.row_ptr(i);
         for(int j = 0; j < rbuf.width() - 3; j += 3){
-          unsigned char* ptr = rbuf.row_ptr(i) + j * 3;
+          unsigned char* ptr = row_ptr + j * 3;
           *ptr++ = 255 * ((sin((i + j + count) / 1000.0) + 1) / 2);
           *ptr++ = 255 * ((sin((i + j + count) / 1000.0 + 100) + 1) / 2);
           *ptr++ = 255 * ((sin((i + j + count) / 1000.0 + 200) + 1) / 2);
