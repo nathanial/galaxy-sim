@@ -25,7 +25,7 @@ protected:
 private:
     Ui::MainWindow *ui;
     void render(QPaintEvent *event);
-    std::shared_ptr<unsigned char []> aggBuffer;
+    std::unique_ptr<unsigned char []> aggBuffer;
 
 };
 

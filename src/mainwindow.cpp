@@ -18,7 +18,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setAttribute(Qt::WA_OpaquePaintEvent);
     this->setAttribute(Qt::WA_NoSystemBackground);
     std::cout << this->width() << " " << this->height() << std::endl;
-    this->aggBuffer.reset(std::make_shared<unsigned char[]>(new unsigned char[this->width() * this->height() * 3]));
+    this->aggBuffer.reset(new unsigned char[this->width() * this->height() * 3]);
 
     QTimer *timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(repaint()));
@@ -42,9 +42,9 @@ void MainWindow::render(QPaintEvent *event){
     const QRect & rect = event->rect();
     galaxy::GalaxyPtr g(new galaxy::Galaxy);
 
-    galaxy::render(this->aggBuffer, this->width(), this->height());
+    galaxy::render(this->aggBuffer.get(), this->width(), this->height());
 
-    QImage image(&*this->aggBuffer, rect.width(), rect.height(), rect.width() * 3, QImage::Format_RGB888);
+    QImage image(this->aggBuffer.get(), rect.width(), rect.height(), rect.width() * 3, QImage::Format_RGB888);
     QPainter painter(this);
     painter.drawImage(QPointF(0,0), image);
 }

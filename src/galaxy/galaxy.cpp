@@ -12,10 +12,11 @@
 
 using namespace galaxy;
 
+static int count;
 
 namespace galaxy {
-    static void render(ImageBuffer buffer, int width, int height, GalaxyPtr g){
-        int count = 0;
+
+    void render(unsigned char buffer[], int width, int height){
         agg::rasterizer_scanline_aa<> pf;
         agg::scanline_p8 sl;
 
@@ -23,7 +24,7 @@ namespace galaxy {
         typedef agg::renderer_base<pixfmt> renderer_base;
 
 
-        agg::rendering_buffer rbuf(&*buffer, width, height, width * 3);
+        agg::rendering_buffer rbuf(buffer, width, height, width * 3);
 
         pixfmt pixf(rbuf);
         renderer_base rb(pixf);

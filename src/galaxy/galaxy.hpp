@@ -18,10 +18,8 @@ namespace galaxy {
   };
 
   typedef std::shared_ptr<Galaxy> GalaxyPtr;
-  typedef std::shared_ptr<unsigned char []> ImageBuffer;
-  typedef std::vector<ImageBuffer> ImageBuffers;
 
-  static void render(ImageBuffer buffer, int width, int height);
+  void render(unsigned char buffer[], int width, int height);
 
 }
 
