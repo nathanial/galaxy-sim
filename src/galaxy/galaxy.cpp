@@ -1,61 +1,54 @@
 #include "galaxy.hpp"
-#include "agg_rendering_buffer.h"
-#include "agg_rasterizer_scanline_aa.h"
-#include "agg_conv_transform.h"
-#include "agg_bspline.h"
-#include "agg_ellipse.h"
-#include "agg_gsv_text.h"
-#include "agg_scanline_p.h"
-#include "agg_renderer_scanline.h"
-#include "agg_pixfmt_rgb.h"
-#include "platform/agg_platform_support.h"
+#include <iostream>
+#include <QImage>
+
+
+#include "SkData.h"
+#include "SkImage.h"
+#include "SkStream.h"
+#include "SkSurface.h"
+#include "SkPaint.h"
+#include "SkPath.h"
+#include "SkCanvas.h"
 
 using namespace galaxy;
 
 static int count;
 
+#define CORRECT_COLOR(R,G,B,A) SkColorSetARGBInline(A, B, G, R)
+
+static void draw(SkCanvas *canvas){
+    std::cout << "Draw" << std::endl;
+    const SkScalar scale = 256.0f;
+    const SkScalar R = 0.45f * scale;
+    const SkScalar TAU = 6.2831853f;
+    SkPath path;
+    path.moveTo(R, 0.0f);
+    for (int i = 1; i < 7; ++i) {
+        SkScalar theta = 3 * i * TAU / 7;
+        path.lineTo(R * cos(theta), R * sin(theta));
+    }
+    path.close();
+    SkPaint p;
+    p.setColor(CORRECT_COLOR(100, 0, 255, 255));
+    p.setAntiAlias(true);
+    canvas->clear(SK_ColorWHITE);
+    canvas->translate(0.5f * scale, 0.5f * scale);
+    canvas->rotate(count++);
+    canvas->drawPath(path, p);
+}
+
 namespace galaxy {
 
-    void render(unsigned char buffer[], int width, int height){
-        agg::rasterizer_scanline_aa<> pf;
-        agg::scanline_p8 sl;
-
-        typedef agg::pixfmt_rgb24 pixfmt;
-        typedef agg::renderer_base<pixfmt> renderer_base;
-
-
-        agg::rendering_buffer rbuf(buffer, width, height, width * 3);
-
-        pixfmt pixf(rbuf);
-        renderer_base rb(pixf);
-
-        rb.clear(agg::rgba(0,0,0));
-
-        //agg::conv_transform<agg::ellipse> t1(e1, trans_affine_());
-
-        double alpha = 1.0;
-    //    for(int i = 0; i < 90000; i++){
-    //        agg::ellipse e1;
-    //        e1.init((i % 385) * 5 + 5, (i / 385) * 5 + 10, 2, 2, 5);
-    //        pf.add_path(e1);
-    //        pf.close_polygon();
-    //        agg::render_scanlines_aa_solid(
-    //            pf, sl, rb,
-    //            agg::rgba(((r1 + i) + count % 1000) / 1000.0,
-    //                      ((r2 + i) + count % 1000) / 1000.0,
-    //                      ((r3 + i) - count % 1000) / 1000.0, 1.0));
-    //    }
-
-        for(int i = 0; i < rbuf.height() - 3; i += 3){
-            unsigned char * row_ptr = rbuf.row_ptr(i);
-            for(int j = 0; j < rbuf.width() - 3; j += 3){
-              unsigned char* ptr = row_ptr + j * 3;
-              *ptr++ = 255 * ((sin((i + j + count) / 1000.0) + 1) / 2);
-              *ptr++ = 255 * ((sin((i + j + count) / 1000.0 + 100) + 1) / 2);
-              *ptr++ = 255 * ((sin((i + j + count) / 1000.0 + 200) + 1) / 2);
-            }
-        }
-        count += rand() / 10000000.0;
+    std::vector<unsigned char> render(int width, int height){
+        SkImageInfo info = SkImageInfo::Make(width, height,kBGRA_8888_SkColorType, kPremul_SkAlphaType);
+        size_t rowBytes = info.minRowBytes();
+        size_t size = info.getSafeSize(rowBytes);
+        std::vector<unsigned char> pixelMemory(size);  // allocate memory
+        SkAutoTUnref<SkSurface> surface(SkSurface::NewRasterDirect(info, pixelMemory.data(), rowBytes));
+        SkCanvas* canvas = surface->getCanvas();
+        draw(canvas);
+        return pixelMemory;
     }
 }
 

@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <memory>
+#include <vector>
 
 class QImage;
 
@@ -25,7 +26,6 @@ protected:
 private:
     Ui::MainWindow *ui;
     void render(QPaintEvent *event);
-    std::unique_ptr<unsigned char []> aggBuffer;
 
 };
 

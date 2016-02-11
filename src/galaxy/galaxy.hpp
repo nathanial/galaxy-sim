@@ -19,7 +19,7 @@ namespace galaxy {
 
   typedef std::shared_ptr<Galaxy> GalaxyPtr;
 
-  void render(unsigned char buffer[], int width, int height);
+  std::vector<unsigned char> render(int width, int height);
 
 }
 
