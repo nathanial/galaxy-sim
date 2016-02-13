@@ -1,1 +1,4 @@
-Split image into quadrants
+Render realistic looking galaxy
+    at least 10k stars
+Twinkle the stars
+Render planets

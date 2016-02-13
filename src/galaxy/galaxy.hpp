@@ -4,22 +4,30 @@
 #include <memory>
 #include <vector>
 
+class SkCanvas;
+
 namespace galaxy {
 
-  class StarMap {
+struct Color {
+  int r, g, b, a;
+};
 
-  };
 
-  typedef std::shared_ptr<StarMap> StarMapPtr;
+typedef std::vector<unsigned char> ImageBuffer;
 
-  class Galaxy {
-  private:
-    StarMapPtr starMap;
-  };
+class Galaxy {
+public:
+  Galaxy();
+  ImageBuffer render(int width, int height);
+private:
+  std::vector<Color> colors;
+  std::vector<double> speeds;
+  int count = 0;
 
-  typedef std::shared_ptr<Galaxy> GalaxyPtr;
+  void draw(SkCanvas *canvas);
+};
 
-  std::vector<unsigned char> render(int width, int height);
+typedef std::shared_ptr<Galaxy> GalaxyPtr;
 
 }
 
