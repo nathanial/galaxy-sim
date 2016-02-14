@@ -78,7 +78,6 @@ void GalaxyView::wheelEvent(QWheelEvent *event) {
 
 void GalaxyView::render(QPaintEvent *event){
   const QRect & rect = event->rect();
-  galaxy::GalaxyPtr g(new galaxy::Galaxy);
 
   options.width = this->width();
   options.height = this->height();

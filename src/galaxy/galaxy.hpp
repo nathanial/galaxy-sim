@@ -19,6 +19,26 @@ namespace galaxy {
     int r, g, b, a;
   };
 
+  struct Star {
+    Color color;
+    double radius;
+  };
+
+  struct Planet {
+    double x,y;
+    double orbitRadius;
+    double radius;
+  };
+
+  struct SolarSystem {
+    Star star;
+    double x, y;
+    std::vector<Planet> planets;
+
+
+
+    void draw(SkCanvas *canvas);
+  };
 
   typedef std::vector<unsigned char> ImageBuffer;
 
@@ -29,11 +49,7 @@ namespace galaxy {
     ImageBuffer render(const DrawOptions& options);
 
   private:
-    std::vector<Color> colors;
-    std::vector<double> speeds;
-    DrawOptions drawOptions;
-    int count = 0;
-
+    std::vector<SolarSystem> solarSystems;
     void draw(SkCanvas *canvas, const DrawOptions& options);
   };
 
