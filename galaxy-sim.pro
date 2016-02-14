@@ -18,7 +18,7 @@ CONFIG += c++14
 INCLUDEPATH += src/galaxy vendor/skia/include/core vendor/skia/include/config
 
 
-FORMS    += src/mainwindow.ui
+FORMS    +=
 
 DISTFILES += \
     TODO.txt
@@ -330,12 +330,14 @@ HEADERS += \
     vendor/skia/include/xml/SkBML_XMLParser.h \
     vendor/skia/include/xml/SkDOM.h \
     vendor/skia/include/xml/SkXMLParser.h \
-    vendor/skia/include/xml/SkXMLWriter.h
+    vendor/skia/include/xml/SkXMLWriter.h \
+    src/galaxy/galaxyview.h
 
 SOURCES += \
     src/main.cpp \
     src/mainwindow.cpp \
-    src/galaxy/galaxy.cpp
+    src/galaxy/galaxy.cpp \
+    src/galaxy/galaxyview.cpp
 
 
 #PRE_TARGETDEPS += $$PWD/vendor/skia/out/Debug/libskia_core.a

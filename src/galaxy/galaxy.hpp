@@ -8,26 +8,36 @@ class SkCanvas;
 
 namespace galaxy {
 
-struct Color {
-  int r, g, b, a;
-};
+  struct DrawOptions {
+    double translateX = 0, translateY = 0;
+    double scaleX = 1, scaleY = 1;
+    int width;
+    int height;
+  };
+
+  struct Color {
+    int r, g, b, a;
+  };
 
 
-typedef std::vector<unsigned char> ImageBuffer;
+  typedef std::vector<unsigned char> ImageBuffer;
 
-class Galaxy {
-public:
-  Galaxy();
-  ImageBuffer render(int width, int height);
-private:
-  std::vector<Color> colors;
-  std::vector<double> speeds;
-  int count = 0;
+  class Galaxy {
 
-  void draw(SkCanvas *canvas);
-};
+  public:
+    Galaxy();
+    ImageBuffer render(const DrawOptions& options);
 
-typedef std::shared_ptr<Galaxy> GalaxyPtr;
+  private:
+    std::vector<Color> colors;
+    std::vector<double> speeds;
+    DrawOptions drawOptions;
+    int count = 0;
+
+    void draw(SkCanvas *canvas, const DrawOptions& options);
+  };
+
+  typedef std::shared_ptr<Galaxy> GalaxyPtr;
 
 }
 

@@ -25,24 +25,24 @@ Galaxy::Galaxy(){
   }
 }
 
-ImageBuffer Galaxy::render(int width, int height){
-  SkImageInfo info = SkImageInfo::Make(width, height,kBGRA_8888_SkColorType, kPremul_SkAlphaType);
+ImageBuffer Galaxy::render(const DrawOptions &options){
+  SkImageInfo info = SkImageInfo::Make(options.width, options.height, kBGRA_8888_SkColorType, kPremul_SkAlphaType);
   size_t rowBytes = info.minRowBytes();
   size_t size = info.getSafeSize(rowBytes);
   std::vector<unsigned char> pixelMemory(size);  // allocate memory
   SkAutoTUnref<SkSurface> surface(SkSurface::NewRasterDirect(info, pixelMemory.data(), rowBytes));
   SkCanvas* canvas = surface->getCanvas();
-  this->draw(canvas);
+  this->draw(canvas, options);
   return pixelMemory;
 }
 
-void Galaxy::draw(SkCanvas *canvas){
+void Galaxy::draw(SkCanvas *canvas, const DrawOptions &options){
   const SkScalar scale = 30.0f;
   const SkScalar R = 0.45f * scale;
   const SkScalar TAU = 6.2831853f;
   SkPaint p;
   p.setAntiAlias(true);
-  canvas->clear(SK_ColorWHITE);
+  canvas->clear(SK_ColorBLACK);
   auto columns = 70;
 
   for(int i = 0; i < stars; i++){
@@ -56,7 +56,7 @@ void Galaxy::draw(SkCanvas *canvas){
     }
     path.close();
 
-    canvas->translate(10, 20);;
+    canvas->translate(options.translateX, options.translateY);
     canvas->translate(0.5f * scale + (i % columns) * scale, 0.5f * scale + (i / columns) * scale);
     canvas->rotate(this->count * i);
 

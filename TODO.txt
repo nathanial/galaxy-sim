@@ -1,4 +1,10 @@
-Render realistic looking galaxy
-    at least 10k stars
+X Set background to black
+X Implement panning
+
+Load star color spectrum
+Make star looks more star-ish
+Arrange stars into galaxy-esque shape
+
+Implement zooming
 Twinkle the stars
-Render planets
+Render planets (at a certain zoom level)
