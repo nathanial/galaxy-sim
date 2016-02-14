@@ -13,5 +13,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
   this->setCentralWidget(new GalaxyView());
   new QGridLayout(this->centralWidget());
+  this->resize(1000, 1000);
+
 }
 

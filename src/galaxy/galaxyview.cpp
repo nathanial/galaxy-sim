@@ -5,7 +5,7 @@
 #include <QTimer>
 #include <QPaintEvent>
 #include <QResizeEvent>
-
+#include <QDesktopWidget>
 
 GalaxyView::GalaxyView(QWidget *parent) :
   QWidget(parent),
@@ -43,6 +43,38 @@ void GalaxyView::mouseReleaseEvent(QMouseEvent *event) {
   this->dragging = false;
 }
 
+void GalaxyView::wheelEvent(QWheelEvent *event) {
+  std::cout << "Mouse X,Y " << event->x() << "," << event->y() << std::endl;
+  galaxy::DrawOptions& opts = this->options;
+
+  auto oldScaleX = opts.scaleX;
+  auto oldScaleY = opts.scaleY;
+
+  if(event->delta() > 0){
+    opts.scaleX *= 1.15;
+    opts.scaleY *= 1.15;
+  } else {
+    opts.scaleX *= 0.85;
+    opts.scaleY *= 0.85;
+  }
+
+  auto deltaWidth = (opts.scaleX * opts.width) - (oldScaleX * opts.width);
+  auto deltaHeight = (opts.scaleY * opts.height) - (oldScaleY * opts.height);
+  auto qx = (event->x() / (double) opts.width);
+  auto qy = (event->y() / (double) opts.height);
+
+  auto sx = (event->x() - opts.translateX) / oldScaleX;
+  auto sy = (event->y() - opts.translateY) / oldScaleY;
+
+  auto ax = sx / (double) this->width();
+  auto ay = sy / (double) this->height();
+
+  auto kx = (deltaWidth * ax); //needs to shrink as
+  auto ky = (deltaHeight * ay);
+
+  opts.translateX = opts.translateX - kx;
+  opts.translateY = opts.translateY - ky;
+}
 
 void GalaxyView::render(QPaintEvent *event){
   const QRect & rect = event->rect();

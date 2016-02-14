@@ -21,6 +21,7 @@ protected:
   void mouseMoveEvent(QMouseEvent * event) Q_DECL_OVERRIDE;
   void mousePressEvent(QMouseEvent * event) Q_DECL_OVERRIDE;
   void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+  void wheelEvent(QWheelEvent *event) Q_DECL_OVERRIDE;
 
 private:
   galaxy::GalaxyPtr galaxy;

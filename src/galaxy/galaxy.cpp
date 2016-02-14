@@ -15,7 +15,7 @@ using namespace galaxy;
 
 #define CORRECT_COLOR(R,G,B,A) SkColorSetARGBInline(A, B, G, R)
 
-static const int stars = 5000;
+static const int stars = 10000;
 
 
 Galaxy::Galaxy(){
@@ -43,7 +43,7 @@ void Galaxy::draw(SkCanvas *canvas, const DrawOptions &options){
   SkPaint p;
   p.setAntiAlias(true);
   canvas->clear(SK_ColorBLACK);
-  auto columns = 70;
+  auto columns = 500;
 
   for(int i = 0; i < stars; i++){
     canvas->save();
@@ -57,6 +57,7 @@ void Galaxy::draw(SkCanvas *canvas, const DrawOptions &options){
     path.close();
 
     canvas->translate(options.translateX, options.translateY);
+    canvas->scale(options.scaleX, options.scaleY);
     canvas->translate(0.5f * scale + (i % columns) * scale, 0.5f * scale + (i / columns) * scale);
     canvas->rotate(this->count * i);
 
