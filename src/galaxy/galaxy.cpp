@@ -3,6 +3,7 @@
 #include <QImage>
 #include <QDateTime>
 #include <random>
+#include <algorithm>
 
 #include "PerlinNoise.h"
 #include "SkRect.h"
@@ -121,7 +122,9 @@ void Galaxy::draw(SkCanvas *canvas, const DrawOptions &options){
   SkColor colors[2] = {SK_ColorWHITE, SK_ColorBLACK};
   SkPaint cloudPaint;
   cloudPaint.setColor(SK_ColorWHITE);
-  cloudPaint.setAlpha(15);
+
+  auto alpha = std::min(std::max(0.0, 15.0 / pow(options.scaleX * 5, 2.0)), 15.0);
+  cloudPaint.setAlpha(alpha);
 
 //  SkShader* shader = SkPerlinNoiseShader::CreateFractalNoise(
 //           0.05f, 0.05f, 4, 0.0f, nullptr);
