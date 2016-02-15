@@ -96,6 +96,7 @@ ImageBuffer Galaxy::render(const DrawOptions &options){
   std::vector<unsigned char> pixelMemory(size);  // allocate memory
   SkAutoTUnref<SkSurface> surface(SkSurface::NewRasterDirect(info, pixelMemory.data(), rowBytes));
   SkCanvas* canvas = surface->getCanvas();
+
   this->draw(canvas, options);
   return pixelMemory;
 }
@@ -121,23 +122,32 @@ void SolarSystem::draw(SkCanvas *canvas){
   const SkScalar scale = 60.0f;
   const SkScalar R = 0.45f * scale;
   const SkScalar TAU = 6.2831853f;
+  auto worldScaleX = canvas->getTotalMatrix().getScaleX();
+
   SkPaint p;
+  p.setColor(CORRECT_COLOR(star.color.r, star.color.g, star.color.b, star.color.a));
   p.setAntiAlias(true);
 
   SkPath path;
   path.moveTo(R, 0.0f);
 
-  auto sides = 5;
-  for (int j = 1; j < sides; ++j) {
-    SkScalar theta = 3 * j * TAU / sides;
-    path.lineTo(R * cos(theta), R * sin(theta));
+  if(worldScaleX < 0.10){
+    auto sides = 5;
+    for (int j = 1; j < sides; ++j) {
+      SkScalar theta = 3 * j * TAU / sides;
+      path.lineTo(R * cos(theta), R * sin(theta));
+    }
+    path.close();
+
+    canvas->translate(this->x, this->y);
+
+    canvas->rotate((QDateTime::currentMSecsSinceEpoch() / 10) % 360);
+    canvas->drawPath(path, p);
+  } else {
+    path.addCircle(0, 0, 5 / sqrt(worldScaleX));
+    path.close();
+    canvas->translate(this->x, this->y);
+    canvas->drawPath(path, p);
   }
-  path.close();
-
-  canvas->translate(this->x, this->y);
-
-  p.setColor(CORRECT_COLOR(star.color.r, star.color.g, star.color.b, star.color.a));
-  canvas->rotate((QDateTime::currentMSecsSinceEpoch() / 10) % 360);
-  canvas->drawPath(path, p);
 
 }
