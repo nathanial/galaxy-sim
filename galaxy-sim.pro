@@ -22,7 +22,8 @@ FORMS    +=
 
 DISTFILES += \
     TODO.txt \
-    resources/StarColorGradient.png
+    resources/StarColorGradient.png \
+    resources/SpaceNebulaTexture.jpg
 
 HEADERS += \
     src/mainwindow.h \

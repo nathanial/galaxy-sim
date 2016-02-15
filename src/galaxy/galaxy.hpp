@@ -1,5 +1,4 @@
-#ifndef GALAXY_H
-#define GALAXY_H
+#pragma once
 
 #include <memory>
 #include <vector>
@@ -58,10 +57,9 @@ namespace galaxy {
   private:
     std::vector<SolarSystem> solarSystems;
     void draw(SkCanvas *canvas, const DrawOptions& options);
+    std::unique_ptr<QImage> nebulaBackground;
   };
 
   typedef std::shared_ptr<Galaxy> GalaxyPtr;
 
 }
-
-#endif

@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/images">
         <file>resources/StarColorGradient.png</file>
+        <file>resources/SpaceNebulaTexture.jpg</file>
     </qresource>
 </RCC>

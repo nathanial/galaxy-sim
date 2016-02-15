@@ -27,7 +27,7 @@ static double radians(double degrees){
 
 static double spiral(double t){
   double a = 500;
-  double b = 0.22;
+  double b = 0.2;
   return a * exp(b * t);
 }
 
@@ -48,6 +48,7 @@ Color StarGradient::randomColor(){
 
 Galaxy::Galaxy(){
   StarGradient gradient;
+  this->nebulaBackground.reset(new QImage(":images/resources/SpaceNebulaTexture.jpg"));
 
   std::default_random_engine generator;
 
@@ -55,13 +56,12 @@ Galaxy::Galaxy(){
   std::normal_distribution<double> distribution(100.0,500.0);
 
 
-  for(int arm = 0; arm < 4; arm ++){
-    double armAngle = radians(arm * 90);
+  for(int arm = 0; arm < 3; arm ++){
+    double armAngle = radians(arm * 135);
     for(int theta = 0; theta < thetaMax; theta += 1){
       double t = radians(theta);
       double x = spiral(t) * cos(t);
       double y = spiral(t) * sin(t);
-
 
       double rx = x * cos(armAngle) - y*sin(armAngle);
       double ry = x * sin(armAngle) + y*cos(armAngle);
@@ -102,8 +102,25 @@ ImageBuffer Galaxy::render(const DrawOptions &options){
 }
 
 void Galaxy::draw(SkCanvas *canvas, const DrawOptions &options){
+  SkImageInfo info = SkImageInfo::Make(this->nebulaBackground->width(), this->nebulaBackground->height(), kBGRA_8888_SkColorType, kPremul_SkAlphaType);
+  size_t rowBytes = info.minRowBytes();
+  size_t size = info.getSafeSize(rowBytes);
+  void *pixels = this->nebulaBackground->bits();
+
+  auto nebulaWidth = this->nebulaBackground->width();
+  auto nebulaHeight = this->nebulaBackground->height();
 
   canvas->clear(SK_ColorBLACK);
+
+  SkAutoTUnref<SkImage> image(SkImage::NewRasterCopy(info, pixels, rowBytes));
+
+  canvas->save();
+  for(int x = -nebulaWidth; x < options.width + nebulaWidth; x += nebulaWidth){
+    for(int y = -nebulaHeight; y < options.height + nebulaHeight; y += nebulaHeight){
+      canvas->drawImage(image, x, y);
+    }
+  }
+  canvas->restore();
 
   canvas->translate(options.translateX, options.translateY);
   canvas->scale(options.scaleX, options.scaleY);

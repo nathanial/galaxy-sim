@@ -1,5 +1,4 @@
-#ifndef GALAXYVIEW_H
-#define GALAXYVIEW_H
+#pragma once
 
 #include <QWidget>
 #include <memory>
@@ -32,5 +31,3 @@ private:
   void render(QPaintEvent *event);
 
 };
-
-#endif // GALAXYVIEW_H
