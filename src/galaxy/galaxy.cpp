@@ -1,6 +1,8 @@
 #include "galaxy.hpp"
 #include <iostream>
 #include <QImage>
+#include <QDateTime>
+#include <random>
 
 
 #include "SkData.h"
@@ -25,17 +27,37 @@ static double radians(double degrees){
 
 static double spiral(double t){
   double a = 500;
-  double b = 0.5;
+  double b = 0.22;
   return a * exp(b * t);
 }
 
+StarGradient::StarGradient(){
+  this->gradientImage.reset(new QImage(":images/resources/StarColorGradient.png"));
+}
+
+Color StarGradient::randomColor(){
+  Color c;
+  int x = rand() % this->gradientImage->width();
+  QRgb rgb = this->gradientImage->pixel(x, 0);
+  c.r = qRed(rgb);
+  c.g = qGreen(rgb);
+  c.b = qBlue(rgb);
+  c.a = qAlpha(rgb);
+  return c;
+}
+
 Galaxy::Galaxy(){
+  StarGradient gradient;
+
+  std::default_random_engine generator;
+
+  auto thetaMax = 1000.0;
+  std::normal_distribution<double> distribution(100.0,500.0);
+
+
   for(int arm = 0; arm < 4; arm ++){
     double armAngle = radians(arm * 90);
-    for(int theta = 0; theta < 500; theta += 1){
-      SolarSystem system;
-      system.star.color = { 255, 255, 255, 255 };
-
+    for(int theta = 0; theta < thetaMax; theta += 1){
       double t = radians(theta);
       double x = spiral(t) * cos(t);
       double y = spiral(t) * sin(t);
@@ -44,10 +66,23 @@ Galaxy::Galaxy(){
       double rx = x * cos(armAngle) - y*sin(armAngle);
       double ry = x * sin(armAngle) + y*cos(armAngle);
 
-      system.star.radius = 5;
-      system.x = rx;
-      system.y = ry;
-      this->solarSystems.push_back(system);
+      auto starCount = pow(5 * ( (thetaMax - theta) / thetaMax), 0.9);
+      if(starCount < 1){
+        auto r = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+        if(r < starCount){
+          starCount = 1;
+        }
+      }
+
+      for(int i = 0; i < starCount; i++){
+        SolarSystem system;
+        system.star.radius = 5;
+        system.star.color = gradient.randomColor();
+        system.x = rx + distribution(generator);
+        system.y = ry + distribution(generator);
+        this->solarSystems.push_back(system);
+      }
+
     }
   }
   std::cout << "Solar Systems " << this->solarSystems.size() << std::endl;
@@ -102,5 +137,7 @@ void SolarSystem::draw(SkCanvas *canvas){
   canvas->translate(this->x, this->y);
 
   p.setColor(CORRECT_COLOR(star.color.r, star.color.g, star.color.b, star.color.a));
+  canvas->rotate((QDateTime::currentMSecsSinceEpoch() / 10) % 360);
   canvas->drawPath(path, p);
+
 }

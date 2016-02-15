@@ -44,7 +44,6 @@ void GalaxyView::mouseReleaseEvent(QMouseEvent *event) {
 }
 
 void GalaxyView::wheelEvent(QWheelEvent *event) {
-  std::cout << "Mouse X,Y " << event->x() << "," << event->y() << std::endl;
   galaxy::DrawOptions& opts = this->options;
 
   auto oldScaleX = opts.scaleX;

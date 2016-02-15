@@ -21,7 +21,8 @@ INCLUDEPATH += src/galaxy vendor/skia/include/core vendor/skia/include/config
 FORMS    +=
 
 DISTFILES += \
-    TODO.txt
+    TODO.txt \
+    resources/StarColorGradient.png
 
 HEADERS += \
     src/mainwindow.h \
@@ -346,3 +347,6 @@ LIBS += -L$$PWD/vendor/skia/out/Release/lib/ -lskia
 
 INCLUDEPATH += $$PWD/vendor/skia/out/Release
 DEPENDPATH += $$PWD/vendor/skia/out/Release
+
+RESOURCES += \
+    images.qrc
