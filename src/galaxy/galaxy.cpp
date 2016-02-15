@@ -4,7 +4,8 @@
 #include <QDateTime>
 #include <random>
 
-
+#include "PerlinNoise.h"
+#include "SkRect.h"
 #include "SkData.h"
 #include "SkImage.h"
 #include "SkStream.h"
@@ -12,6 +13,9 @@
 #include "SkPaint.h"
 #include "SkPath.h"
 #include "SkCanvas.h"
+#include "SkShader.h"
+#include "SkGradientShader.h"
+#include "SkPerlinNoiseShader.h"
 
 #include <math.h>
 
@@ -20,6 +24,11 @@ using namespace galaxy;
 #define CORRECT_COLOR(R,G,B,A) SkColorSetARGBInline(A, B, G, R)
 
 static const int stars = 10000;
+
+
+const int nebulaWidth = 1000;
+const int nebulaHeight = 1000;
+
 
 static double radians(double degrees){
   return (degrees * M_PI) / 180;
@@ -48,7 +57,6 @@ Color StarGradient::randomColor(){
 
 Galaxy::Galaxy(){
   StarGradient gradient;
-  this->nebulaBackground.reset(new QImage(":images/resources/SpaceNebulaTexture.jpg"));
 
   std::default_random_engine generator;
 
@@ -78,8 +86,11 @@ Galaxy::Galaxy(){
         SolarSystem system;
         system.star.radius = 5;
         system.star.color = gradient.randomColor();
-        system.x = rx + distribution(generator);
-        system.y = ry + distribution(generator);
+        auto width = distribution(generator);
+        auto height = distribution(generator);
+        system.x = rx + width;
+        system.y = ry + height;
+        this->clouds.push_back(SkRect::MakeXYWH(rx - width, ry - height, width * 2, height * 2));
         this->solarSystems.push_back(system);
       }
 
@@ -102,28 +113,23 @@ ImageBuffer Galaxy::render(const DrawOptions &options){
 }
 
 void Galaxy::draw(SkCanvas *canvas, const DrawOptions &options){
-  SkImageInfo info = SkImageInfo::Make(this->nebulaBackground->width(), this->nebulaBackground->height(), kBGRA_8888_SkColorType, kPremul_SkAlphaType);
-  size_t rowBytes = info.minRowBytes();
-  size_t size = info.getSafeSize(rowBytes);
-  void *pixels = this->nebulaBackground->bits();
-
-  auto nebulaWidth = this->nebulaBackground->width();
-  auto nebulaHeight = this->nebulaBackground->height();
-
   canvas->clear(SK_ColorBLACK);
-
-  SkAutoTUnref<SkImage> image(SkImage::NewRasterCopy(info, pixels, rowBytes));
-
-  canvas->save();
-  for(int x = -nebulaWidth; x < options.width + nebulaWidth; x += nebulaWidth){
-    for(int y = -nebulaHeight; y < options.height + nebulaHeight; y += nebulaHeight){
-      canvas->drawImage(image, x, y);
-    }
-  }
-  canvas->restore();
 
   canvas->translate(options.translateX, options.translateY);
   canvas->scale(options.scaleX, options.scaleY);
+
+  SkColor colors[2] = {SK_ColorWHITE, SK_ColorBLACK};
+  SkPaint cloudPaint;
+  cloudPaint.setColor(SK_ColorWHITE);
+  cloudPaint.setAlpha(15);
+
+//  SkShader* shader = SkPerlinNoiseShader::CreateFractalNoise(
+//           0.05f, 0.05f, 4, 0.0f, nullptr);
+//  cloudPaint.setShader(shader);
+
+  for(SkRect & cloud : clouds){
+    canvas->drawRect(cloud, cloudPaint);
+  }
 
   for(auto && system : solarSystems){
     canvas->save();

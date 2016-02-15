@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <vector>
+#include "SkRect.h"
 
 class SkCanvas;
 class QImage;
@@ -56,8 +57,8 @@ namespace galaxy {
 
   private:
     std::vector<SolarSystem> solarSystems;
+    std::vector<SkRect> clouds;
     void draw(SkCanvas *canvas, const DrawOptions& options);
-    std::unique_ptr<QImage> nebulaBackground;
   };
 
   typedef std::shared_ptr<Galaxy> GalaxyPtr;

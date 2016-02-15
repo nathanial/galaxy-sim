@@ -15,7 +15,11 @@ QMAKE_CXX = clang
 
 CONFIG += c++14
 
-INCLUDEPATH += src/galaxy vendor/skia/include/core vendor/skia/include/config
+INCLUDEPATH += src/galaxy\
+  src/noise\
+  vendor/skia/include/core\
+  vendor/skia/include/config\
+  vendor/skia/include/effects
 
 
 FORMS    +=
@@ -333,13 +337,15 @@ HEADERS += \
     vendor/skia/include/xml/SkDOM.h \
     vendor/skia/include/xml/SkXMLParser.h \
     vendor/skia/include/xml/SkXMLWriter.h \
-    src/galaxy/galaxyview.h
+    src/galaxy/galaxyview.h \
+    src/noise/PerlinNoise.h
 
 SOURCES += \
     src/main.cpp \
     src/mainwindow.cpp \
     src/galaxy/galaxy.cpp \
-    src/galaxy/galaxyview.cpp
+    src/galaxy/galaxyview.cpp \
+    src/noise/PerlinNoise.cpp
 
 
 #PRE_TARGETDEPS += $$PWD/vendor/skia/out/Debug/libskia_core.a
