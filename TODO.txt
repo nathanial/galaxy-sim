@@ -1,10 +1,20 @@
 X Set background to black
 X Implement panning
 
-Load star color spectrum
-Make star looks more star-ish
-Arrange stars into galaxy-esque shape
+X Load star color spectrum
+X Make star looks more star-ish
+X Arrange stars into galaxy-esque shape
 
-Implement zooming
-Twinkle the stars
+X Implement zooming
+X Twinkle the stars
+
+
+For better cloud spiral
+  Cut out solid white shape
+  Blur it
+
+  ? 1. Cut out inner white shape
+    2. Cut out second larger semitransparent shape
+    3. Repeat
+
 Render planets (at a certain zoom level)

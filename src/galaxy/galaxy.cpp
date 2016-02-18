@@ -119,20 +119,19 @@ void Galaxy::draw(SkCanvas *canvas, const DrawOptions &options){
   canvas->translate(options.translateX, options.translateY);
   canvas->scale(options.scaleX, options.scaleY);
 
-  SkColor colors[2] = {SK_ColorWHITE, SK_ColorBLACK};
   SkPaint cloudPaint;
   cloudPaint.setColor(SK_ColorWHITE);
+  cloudPaint.setAntiAlias(false);
 
   auto alpha = std::min(std::max(0.0, 15.0 / pow(options.scaleX * 5, 2.0)), 15.0);
   cloudPaint.setAlpha(alpha);
 
-//  SkShader* shader = SkPerlinNoiseShader::CreateFractalNoise(
-//           0.05f, 0.05f, 4, 0.0f, nullptr);
-//  cloudPaint.setShader(shader);
 
+  canvas->saveLayer(nullptr, nullptr);
   for(SkRect & cloud : clouds){
     canvas->drawRect(cloud, cloudPaint);
   }
+  canvas->restore();
 
   for(auto && system : solarSystems){
     canvas->save();
