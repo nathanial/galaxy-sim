@@ -17,6 +17,9 @@
 #include "SkShader.h"
 #include "SkGradientShader.h"
 #include "SkPerlinNoiseShader.h"
+#include "SkDiscretePathEffect.h"
+#include "SkComposeShader.h"
+#include "SkBlurMaskFilter.h"
 
 #include <math.h>
 
@@ -63,7 +66,7 @@ Galaxy::Galaxy(){
 
   auto thetaMax = 1000.0;
   std::normal_distribution<double> distribution(100.0,500.0);
-
+  this->clouds.clear();
 
   for(int arm = 0; arm < 3; arm ++){
     double armAngle = radians(arm * 135);
@@ -91,11 +94,15 @@ Galaxy::Galaxy(){
         auto height = distribution(generator);
         system.x = rx + width;
         system.y = ry + height;
-        this->clouds.push_back(SkRect::MakeXYWH(rx - width, ry - height, width * 2, height * 2));
         this->solarSystems.push_back(system);
       }
 
+      if(theta % 3 == 0){
+        int width = 500;
+        clouds.push_back(SkRect::MakeXYWH(rx, ry, width, width));
+      }
     }
+
   }
   std::cout << "Solar Systems " << this->solarSystems.size() << std::endl;
 
@@ -119,16 +126,19 @@ void Galaxy::draw(SkCanvas *canvas, const DrawOptions &options){
   canvas->translate(options.translateX, options.translateY);
   canvas->scale(options.scaleX, options.scaleY);
 
-  SkPaint cloudPaint;
-  cloudPaint.setColor(SK_ColorWHITE);
-  cloudPaint.setAntiAlias(false);
+  canvas->save();
+  for(auto && cloud : clouds){
+    SkAutoTUnref<SkShader> shader(SkPerlinNoiseShader::CreateTurbulence(
+             0.01f, 0.01f, 5, rand(), nullptr));
 
-  auto alpha = std::min(std::max(0.0, 15.0 / pow(options.scaleX * 5, 2.0)), 15.0);
-  cloudPaint.setAlpha(alpha);
+    SkPaint cloudPaint;
+    cloudPaint.setShader(shader);
+    cloudPaint.setAntiAlias(false);
+    cloudPaint.setStrokeWidth(255);
+    cloudPaint.setXfermodeMode(SkXfermode::kSrc_Mode);
+    cloudPaint.setColor(CORRECT_COLOR(255,255,255,255));
 
 
-  canvas->saveLayer(nullptr, nullptr);
-  for(SkRect & cloud : clouds){
     canvas->drawRect(cloud, cloudPaint);
   }
   canvas->restore();

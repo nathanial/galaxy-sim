@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 #include "SkRect.h"
+#include "SkPath.h"
 
 class SkCanvas;
 class QImage;
